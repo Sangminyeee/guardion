@@ -14,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class Alert {
 	private Long id;
 
 	@ManyToOne(optional = false)
-	@Column(name = "user_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
 	@Enumerated(EnumType.STRING)
@@ -40,7 +41,7 @@ public class Alert {
 	private AlertType alertType;
 
 	@OneToOne
-	@Column(name = "device_data_id")
+	@JoinColumn(name = "device_data_id")
 	private DeviceData deviceData;
 
 	private String message;
