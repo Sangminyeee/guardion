@@ -49,5 +49,5 @@ public class User extends BaseEntity {
 	private UserRole role;
 
 	// @Column(name = "last_login_at")
-	// private LocalDateTime lastLoginAt;
+	// private LocalDateTime lastLoginAt; :)
 }
