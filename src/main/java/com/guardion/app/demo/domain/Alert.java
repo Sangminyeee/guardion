@@ -1,9 +1,5 @@
 package com.guardion.app.demo.domain;
 
-import java.time.LocalDateTime;
-
-import javax.print.attribute.standard.Severity;
-
 import com.guardion.app.demo.eunms.AlertSeverity;
 import com.guardion.app.demo.eunms.AlertType;
 
@@ -34,7 +30,7 @@ public class Alert {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	private Users user;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "alert_type")
