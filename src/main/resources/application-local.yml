@@ -21,3 +21,8 @@ logging:
 
 jwt:
   secret: "yoursecretkeyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+
+mqtt:
+  broker: tcp://localhost:1883
+  client-id: mqtt-client
+  topic: your/topic

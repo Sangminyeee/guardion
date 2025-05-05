@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.guardion.app.demo.UserRepository.UserRepository;
+import com.guardion.app.demo.repository.UserRepository;
 import com.guardion.app.demo.domain.Users;
 import com.guardion.app.demo.security.dto.LoginRequest;
 import com.guardion.app.demo.security.dto.SignupRequest;

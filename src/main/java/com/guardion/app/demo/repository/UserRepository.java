@@ -1,4 +1,4 @@
-package com.guardion.app.demo.UserRepository;
+package com.guardion.app.demo.repository;
 
 import java.util.Optional;
 
@@ -10,6 +10,5 @@ import com.guardion.app.demo.domain.Users;
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
 	Optional<Users> findByUsername(String username);
-
 	boolean existsByUsername(String username);
 }

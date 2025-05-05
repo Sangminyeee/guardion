@@ -1,4 +1,4 @@
-package com.guardion.app.demo.security;
+package com.guardion.app.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +10,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.guardion.app.demo.security.CustomUserDetailsService;
+import com.guardion.app.demo.security.JwtProvider;
+import com.guardion.app.demo.security.JwtTokenFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -33,7 +36,7 @@ public class SecurityConfig {
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/auth/**", "/signup", "/login").permitAll()
+				.requestMatchers("/auth/**", "/signup", "/login", "/health").permitAll()
 				.anyRequest().authenticated())
 			.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
 			.build();
