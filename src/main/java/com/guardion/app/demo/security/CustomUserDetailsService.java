@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.guardion.app.demo.repository.UserRepository;
-import com.guardion.app.demo.domain.Users;
+import com.guardion.app.demo.domain.User;
 
 import lombok.AllArgsConstructor;
 
@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username)
 		throws UsernameNotFoundException {
-		Users user = userRepository.findByUsername(username)
+		User user = userRepository.findByUsername(username)
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 		return new CustomUserDetails(user);
 	}

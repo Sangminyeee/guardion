@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.guardion.app.demo.domain.Users;
+import com.guardion.app.demo.domain.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-	private final Users user;
+	private final User user;
 
 	public String getUsername() { return user.getUsername(); }
 	public String getPassword() { return user.getPassword(); }

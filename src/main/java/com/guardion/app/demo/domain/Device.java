@@ -28,7 +28,7 @@ public class Device extends BaseEntity {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
-	private Users user;
+	private User user;
 
 	@Column(name = "serial_number", unique = true)
 	private String serialNumber;

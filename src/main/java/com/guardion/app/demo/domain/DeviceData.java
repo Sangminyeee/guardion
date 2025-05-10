@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.guardion.app.demo.domain.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +50,7 @@ public class DeviceData extends BaseEntity {
 	@Column(name = "light_status")
 	private Boolean lightStatus; // 1:on, 0:off
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "device_gps_id")
 	private DeviceGpsLog deviceGps;
 }

@@ -1,8 +1,10 @@
 package com.guardion.app.demo.domain;
 
+import com.guardion.app.demo.domain.common.BaseEntity;
 import com.guardion.app.demo.eunms.AlertSeverity;
 import com.guardion.app.demo.eunms.AlertType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,20 +25,27 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Alert {
+public class Alert extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
-	private Users user;
+	private User user;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "device_id", nullable = false)
+	private Device device;
+
+	@Column(name = "alert_code")
+	private String alertCode;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "alert_type")
 	private AlertType alertType;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "device_data_id")
 	private DeviceData deviceData;
 

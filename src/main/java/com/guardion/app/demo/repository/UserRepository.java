@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.guardion.app.demo.domain.Users;
+import com.guardion.app.demo.domain.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<Users, Long> {
-	Optional<Users> findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+	Optional<User> findByUsername(String username);
 	boolean existsByUsername(String username);
 }

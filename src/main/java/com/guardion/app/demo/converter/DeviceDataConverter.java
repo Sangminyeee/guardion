@@ -5,13 +5,15 @@ import org.springframework.stereotype.Component;
 import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
 import com.guardion.app.demo.dto.MqttTestDto;
+import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
 import com.guardion.app.demo.repository.DeviceDataRepository;
 import com.guardion.app.demo.repository.DeviceRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DeviceDataConverter {
 
 	DeviceRepository deviceRepository;
@@ -24,5 +26,9 @@ public class DeviceDataConverter {
 				.device(device)
 				.internalHumidity(dto.getMessage())
 				.build();
+	}
+
+	public GetTemperatureHumidityResponse deviceDataToGetTemperatureHumidityResponse(DeviceData deviceData) {
+		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity());
 	}
 }

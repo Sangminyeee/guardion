@@ -32,6 +32,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handleException(Exception e) {
+		return ResponseEntity
+			.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(Map.of("error", e.getMessage()));
+	}
+
 	//@Valid, @Validated 검증 실패 시
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -62,11 +69,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-		ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
+	// 	ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+	// 	return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
 
 
 }

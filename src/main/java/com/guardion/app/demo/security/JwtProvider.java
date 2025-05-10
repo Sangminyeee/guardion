@@ -4,13 +4,16 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -40,6 +43,7 @@ public class JwtProvider {
 				.parseClaimsJws(token);
 			return !claims.getBody().getExpiration().before(new Date());
 		} catch (JwtException | IllegalArgumentException e) {
+			log.warn("Invalid JWT: {}", e.getMessage());
 			return false;
 		}
 	}
