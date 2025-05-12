@@ -1,12 +1,12 @@
 server:
-  port:
+  port: 8080
 
 spring:
   datasource:
-    url:
-    username:
-    password:
-    driver-class-name:
+    url: jdbc:mysql://guardion.cvsguqoo21it.ap-southeast-2.rds.amazonaws.com:3306/guardion?useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password: ehdusrla
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,3 +19,12 @@ logging:
   level:
     root: INFO
     com.guardion: DEBUG
+    org.springframework.security: DEBUG
+
+jwt:
+  secret:  //아무 문자열을 넣어주세요.
+
+mqtt:
+  broker: tcp://localhost:1883
+  client-id: mqtt-client
+  topic: test/topic

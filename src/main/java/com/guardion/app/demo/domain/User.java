@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "`user`")
 public class User extends BaseEntity {
 
 	@Id
@@ -36,7 +38,7 @@ public class User extends BaseEntity {
 	@Column(name = "institution_name")
 	private String institution;
 
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'USER'")
 	private String role;
 
 	// @Column(name = "last_login_at")
