@@ -7,6 +7,10 @@ plugins {
 group = 'com.guardion.app'
 version = '0.0.1-SNAPSHOT'
 
+tasks.named('bootJar') {
+	archiveFileName = 'app.jar' // EC2에 복사할 jar 이름
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -45,6 +49,9 @@ dependencies {
 
 	//mqtt
 	implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+
+	//swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 }
 
 tasks.named('test') {
