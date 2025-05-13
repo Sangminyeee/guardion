@@ -42,7 +42,7 @@ CREATE TABLE "device_gps_log" (
   "id" SERIAL PRIMARY KEY,
   "latitude" FLOAT,
   "longitude" FLOAT,
-  -- "device_status_id" INTEGER NOT NULL,
+  "device_status_id" INTEGER NOT NULL,
   "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
