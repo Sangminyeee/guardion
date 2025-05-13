@@ -19,7 +19,7 @@ CREATE TABLE "device_data" (
   "battery_exists" BOOLEAN,
   "beep_status" BOOLEAN,
   "light_status" BOOLEAN,
-  "last_updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  "last_updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- BaseEntity에서 상속
   "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- BaseEntity에서 상속
 );
