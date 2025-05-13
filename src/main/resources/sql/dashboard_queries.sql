@@ -26,11 +26,11 @@ SELECT
     d.id,
     d.device_name,
     CASE WHEN d.is_connected THEN 'ONLINE' ELSE 'OFFLINE' END AS status,
-    ds.internal_temperature,
-    ds.internal_humidity
+    dd.internal_temperature,
+    dd.internal_humidity
   FROM device d
-  LEFT JOIN device_status ds
-    ON ds.device_id = d.id
+  LEFT JOIN device_data dd
+    ON dd.device_id = d.id
  ORDER BY d.device_name;
 
 --------------------------------------------------------------------------------
@@ -38,37 +38,38 @@ SELECT
 -- 배터리 잔량(배터리 존재 여부) + 내부 온도 + 충전 이력(마지막 업데이트)
 SELECT
     d.id             AS device_id,
-    ds.battery_exist AS battery_present,
-    ds.internal_temperature,
-    ds.last_updated_at AS last_update
-  FROM device_status ds
+    dd.battery_exists AS battery_present,
+    dd.internal_temperature,
+    dd.updated_at AS last_update
+  FROM device_data dd
   JOIN device d
-    ON d.id = ds.device_id
+    ON d.id = dd.device_id
  ORDER BY d.id;
 
 --------------------------------------------------------------------------------
 -- 05. 현재 위치 (GPS)
 -- 최근 위치 1건만 가져오기
-SELECT DISTINCT ON (device_status_id)
-    device_status_id,
-    latitude,
-    longitude,
-    recorded_at
-  FROM device_gps_log
- ORDER BY device_status_id, recorded_at DESC;
+SELECT DISTINCT ON (dd.id)  -- device_status_id -> dd.id
+    dd.id,
+    dgl.latitude,
+    dgl.longitude,
+    dgl.created_at AS recorded_at
+  FROM device_data dd
+  JOIN device_gps_log dgl
+ ORDER BY dd.id, dgl.created_at DESC;
 
 --------------------------------------------------------------------------------
 -- 06. 함체 상태 요약
 -- cover/light/beep 상태 + 통신 연결 여부
 SELECT
     d.id,
-    ds.cover_status,
-    ds.light_status,
-    ds.beep_status,
+    dd.door_status,
+    dd.light_status,
+    dd.beep_status,
     d.is_connected
   FROM device d
-  JOIN device_status ds
-    ON ds.device_id = d.id;
+  JOIN device_data dd
+    ON dd.device_id = d.id;
 
 --------------------------------------------------------------------------------
 -- 07. 계정 정보 (로그인 사용자 프로필)
@@ -76,7 +77,6 @@ SELECT
     id,
     username,
     role,
-    last_login_at,
     created_at
   FROM "user"
  ORDER BY username;
@@ -86,12 +86,10 @@ SELECT
 -- 최근 50건 (디테일 페이지에서 device_id 필터링하여 사용)
 SELECT
     a.created_at,
-    a.type,
+    a.alert_type AS type,
     a.message,
-    a.severity
+    a.alert_severity AS severity
   FROM alert a
- WHERE a.device_status_id IN (
-      SELECT id FROM device_status WHERE device_id = $device
-    )
+ WHERE a.device_id = $device
  ORDER BY a.created_at DESC
  LIMIT 50;
