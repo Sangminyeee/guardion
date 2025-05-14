@@ -29,14 +29,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain)
 		throws ServletException, IOException {
-
-		if (path.startsWith("/swagger-ui")
-			|| path.startsWith("/v3/api-docs")
-			|| path.startsWith("/swagger-resources")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
 		String token = resolveToken(request);
 		log.debug("Extracted token: {}", token);
 		if (token != null && jwtProvider.validateToken(token)) {
