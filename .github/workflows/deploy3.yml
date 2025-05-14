@@ -12,8 +12,8 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-        - name: Show commit SHA
-          run: echo "Current Commit SHA: $GITHUB_SHA"
+      - name: Show commit SHA
+        run: echo "Current Commit SHA: ${{ github.sha }}"
 
       - name: Set up SSH
         run: |
