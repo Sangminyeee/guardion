@@ -30,6 +30,9 @@ mqtt:
   client-id: mqtt-client
   topic: test/topic
 
+cors:
+  allowed-origin : http://localhost:3000
+
 # application.yml
 #springdoc:
 #  swagger-ui:
