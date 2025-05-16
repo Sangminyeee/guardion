@@ -27,8 +27,9 @@ jwt:
 
 mqtt:
   broker: tcp://localhost:1883
-  client-id: mqtt-client
-  topic: test/topic
+  client-id: guardion-sub
+  sub-topic: test/topic
+  publisher-id: guardion-pub
 
 cors:
   allowed-origin : http://localhost:3000

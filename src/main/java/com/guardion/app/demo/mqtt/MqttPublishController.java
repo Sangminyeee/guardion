@@ -5,20 +5,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.guardion.app.demo.dto.MqttTestResponse;
-import com.guardion.app.demo.dto.MqttTestResponseShort;
+import com.guardion.app.demo.dto.mqtt.MqttTestSend;
+import com.guardion.app.demo.dto.mqtt.MqttTestSendShort;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mqtt")
-public class MqttTestController {
+public class MqttPublishController {
 
 	private final MqttPublisher mqttPublisher;
 	private final ObjectMapper objectMapper;
 
 	@PostMapping("/send")
-	public String sendMqtt(@RequestBody MqttTestResponse request) throws Exception {
-		// String topic = "device/" + request.getDeviceId() + "/command";
+	public String sendMqtt(@RequestBody MqttTestSend request) throws Exception {
 		String topic = "devices/batsafety/control";
 		String payload = objectMapper.writeValueAsString(request);
 
@@ -27,8 +26,8 @@ public class MqttTestController {
 	}
 
 	@PostMapping("/send-1")
-	public String sendMqtt(@RequestBody MqttTestResponseShort request) throws Exception {
+	public String sendMqtt(@RequestBody MqttTestSendShort request) throws Exception {
 		mqttPublisher.publish(request.getTopic(), request.getMessage());
-		return "Sent to topic: " + request.getTopic();
+		return "Published to topic: " + request.getTopic();
 	}
 }

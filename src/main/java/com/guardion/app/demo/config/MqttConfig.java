@@ -21,7 +21,7 @@ public class MqttConfig {
 	@Value("${mqtt.client-id}")
 	private String clientId;
 
-	@Value("${mqtt.topic}")
+	@Value("${mqtt.sub-topic}")
 	private String topic;
 
 	@Bean

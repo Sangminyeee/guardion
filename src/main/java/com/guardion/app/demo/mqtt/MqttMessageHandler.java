@@ -4,12 +4,12 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardion.app.demo.converter.DeviceDataConverter;
 import com.guardion.app.demo.domain.DeviceData;
-import com.guardion.app.demo.dto.MqttTestRequest;
-import com.guardion.app.demo.dto.MqttTestRequestDetailed;
+import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.repository.DeviceDataRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +37,7 @@ public class MqttMessageHandler {
 	// 	}
 	// }
 
+	@Transactional
 	public void messageArrived(String topic, MqttMessage message) {
 		String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
 		System.out.println("Received: " + message);

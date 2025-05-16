@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
-import com.guardion.app.demo.dto.MqttTestRequest;
-import com.guardion.app.demo.dto.MqttTestRequestDetailed;
+import com.guardion.app.demo.dto.mqtt.MqttTestRequest;
+import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
 import com.guardion.app.demo.repository.DeviceRepository;
 

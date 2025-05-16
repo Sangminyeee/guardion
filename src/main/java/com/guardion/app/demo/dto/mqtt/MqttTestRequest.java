@@ -1,4 +1,4 @@
-package com.guardion.app.demo.dto;
+package com.guardion.app.demo.dto.mqtt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

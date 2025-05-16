@@ -30,7 +30,11 @@ public enum ErrorCode {
 
 	//security
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "S001", "비밀번호가 일치하지 않습니다."),
-	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "S002", "인증되지 않은 사용자입니다.");
+	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "S002", "인증되지 않은 사용자입니다."),
+
+	//mqtt
+	MQTT_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M001", "MQTT 연결 오류입니다."),
+	MQTT_PUBLISH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "MQTT 메시지 발행 오류입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
