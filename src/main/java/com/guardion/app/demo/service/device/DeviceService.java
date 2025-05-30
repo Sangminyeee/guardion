@@ -27,11 +27,11 @@ public class DeviceService {
 	private final DeviceConverter deviceConverter;
 
 	@Transactional
-	public void registerDevice(RegisterDeviceRequest request, String username) {
-		User user =  userRepository.findByUsername(username)
+	public void registerDevice(RegisterDeviceRequest request, Long userId) {
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-		if (deviceRepository.existsByUserIdAndSerialNumber(user.getId(), request.getSerialNumber())) {
+		if (deviceRepository.existsByUserIdAndSerialNumber(userId, request.getSerialNumber())) {
 			throw new BusinessException(ErrorCode.DEVICE_ALREADY_REGISTERED);
 		}
 
@@ -41,8 +41,8 @@ public class DeviceService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<GetUsersAllDeviceResponse> getUsersAllDevice(String username) {
-		List<Device> devices = deviceRepository.findAllByUser_Username(username);
+	public List<GetUsersAllDeviceResponse> getUsersAllDevice(Long userId) {
+		List<Device> devices = deviceRepository.findAllByUserId(userId);
 		if (devices.isEmpty()) {
 			throw new BusinessException(ErrorCode.DEVICE_NOT_FOUND);
 		}
@@ -51,8 +51,8 @@ public class DeviceService {
 	}
 
 	@Transactional(readOnly = true)
-	public GetDeviceInfoResponse getDeviceInfo(String username, String serialNumber) {
-		Device device = deviceRepository.findByUser_UsernameAndSerialNumber(username, serialNumber)
+	public GetDeviceInfoResponse getDeviceInfo(Long userId, String serialNumber) {
+		Device device = deviceRepository.findByUserIdAndSerialNumber(userId, serialNumber)
 			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
 
 		return deviceConverter.deviceToGetDeviceInfoResponse(device);

@@ -3,6 +3,7 @@ package com.guardion.app.demo.controller.device;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.guardion.app.demo.dto.device.GetDeviceInfoResponse;
 import com.guardion.app.demo.dto.device.GetUsersAllDeviceResponse;
 import com.guardion.app.demo.dto.device.RegisterDeviceRequest;
 import com.guardion.app.demo.exception.responseDto.ApiResponse;
+import com.guardion.app.demo.security.CustomUserDetails;
 import com.guardion.app.demo.service.device.DeviceService;
 
 import jakarta.validation.Valid;
@@ -26,21 +28,32 @@ public class DeviceController {
 
 	private final DeviceService deviceService;
 
-	@PostMapping("/{username}")
-	public ResponseEntity<ApiResponse<Void>> registerDevice(@RequestBody @Valid RegisterDeviceRequest request, @PathVariable String username) {
-		deviceService.registerDevice(request, username);
+	@PostMapping
+	public ResponseEntity<ApiResponse<Void>> registerDevice(
+		@RequestBody @Valid RegisterDeviceRequest request,
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		deviceService.registerDevice(request, userId);
 		return ResponseEntity.ok(ApiResponse.successWithNoData());
 	}
 
-	@GetMapping("/{username}")
-	public ResponseEntity<ApiResponse<List<GetUsersAllDeviceResponse>>> getUsersAllDevice(@PathVariable String username) {
-		List<GetUsersAllDeviceResponse> list = deviceService.getUsersAllDevice(username);
+	@GetMapping
+	public ResponseEntity<ApiResponse<List<GetUsersAllDeviceResponse>>> getUsersAllDevice(
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		List<GetUsersAllDeviceResponse> list = deviceService.getUsersAllDevice(userId);
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 
-	@GetMapping("/{username}/{serialNumber}")
-	public ResponseEntity<ApiResponse<GetDeviceInfoResponse>> getDeviceInfo(@PathVariable String username, @PathVariable String serialNumber) {
-		GetDeviceInfoResponse response = deviceService.getDeviceInfo(username, serialNumber);
+	@GetMapping("{serialNumber}")
+	public ResponseEntity<ApiResponse<GetDeviceInfoResponse>> getDeviceInfo(
+		@PathVariable String serialNumber,
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		GetDeviceInfoResponse response = deviceService.getDeviceInfo(userId, serialNumber);
 		return ResponseEntity.ok(ApiResponse.success(response));
 	}
 }
