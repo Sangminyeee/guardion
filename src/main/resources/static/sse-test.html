@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SSE 테스트</title>
+</head>
+<body>
+<h1>센서 데이터 실시간 수신</h1>
+<div id="sensor-data">데이터 대기 중...</div>
+
+<script>
+    const eventSource = new EventSource("http://localhost:8080/sse/subscribe");
+
+    // 모든 메시지 수신 처리 (기본 메시지)
+    eventSource.onmessage = function(event) {
+        document.getElementById("sensor-data").innerText = event.data;
+        console.log("onmessage 수신:", event.data);
+    };
+
+    // 커스텀 이벤트 이름으로 보낼 경우
+    eventSource.addEventListener("sensor-data", function(event) {
+        document.getElementById("sensor-data").innerText = event.data;
+        console.log("sensor-data 이벤트 수신:", event.data);
+    });
+
+    // 연결 에러 처리
+    eventSource.onerror = function(err) {
+        console.error("SSE 에러 발생:", err);
+    };
+</script>
+</body>
+</html>

@@ -8,4 +8,6 @@ import lombok.Getter;
 public class GetTemperatureHumidityResponse {
 	private Float temperature;
 	private Float Humidity;
+	private Long temperatureDiff;
+	private Long humidityDiff;
 }

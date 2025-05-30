@@ -41,7 +41,7 @@ public class SecurityConfig {
 				.permitAll()
 				.requestMatchers("/auth/**", "/signup", "/login", "/health")
 				.permitAll()
-				.requestMatchers("/", "/error", "/api/mqtt/**")
+				.requestMatchers("/", "/error", "/api/mqtt/**", "/sse/**", "/sse-test.html")
 				.permitAll()
 				.anyRequest().authenticated())
 			.addFilterBefore(new JwtTokenFilter(jwtProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class)

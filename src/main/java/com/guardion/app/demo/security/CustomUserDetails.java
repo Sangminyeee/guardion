@@ -23,7 +23,10 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority(user.getRole()));
+		if (user.getRole() == null) {
+			throw new IllegalStateException("User role must not be null or empty");
+		}
+		return List.of(new SimpleGrantedAuthority(user.getRole().name()));
 	}
 
 	@Override public boolean isAccountNonExpired() { return true; }

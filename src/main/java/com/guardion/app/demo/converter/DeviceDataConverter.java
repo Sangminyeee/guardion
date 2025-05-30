@@ -1,5 +1,6 @@
 package com.guardion.app.demo.converter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.guardion.app.demo.domain.Device;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DeviceDataConverter {
 
+	@Autowired
 	DeviceRepository deviceRepository;
 
 	public DeviceData mqttTestRequestToDeviceData(MqttTestRequest dto) {
@@ -44,6 +46,7 @@ public class DeviceDataConverter {
 	}
 
 	public GetTemperatureHumidityResponse deviceDataToGetTemperatureHumidityResponse(DeviceData deviceData) {
-		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity());
+		//이부분
+		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity(), 0L, 0L);
 	}
 }

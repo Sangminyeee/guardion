@@ -16,4 +16,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 	Optional<Device> findByUser_UsernameAndSerialNumber(String serialNumber, String username);
 	boolean existsBySerialNumber(String serialNumber);
 	Optional<Device> findBySerialNumber(String serialNumber);
+	boolean existsByUserIdAndSerialNumber(Long userId, String serialNumber);
 }

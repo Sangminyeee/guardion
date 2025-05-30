@@ -9,4 +9,5 @@ public class GetAlertResponse {
 
 	private String alertCode;
 	private String alertType;
+	private String alertMessage;
 }

@@ -34,11 +34,11 @@ public class UserActivityLog extends BaseEntity {
 	@Column(name = "activity_type")
 	private ActivityType activityType; // login, logout, update_device, etc.
 
-	//고민중
+	//고도화
 	// @Column(name = "activity_target")
 	// private String activityTarget; // 활동 대상 (예: 경로, 리소스 ID 등)
 
-	//고민중
+	//고도화
 	// @Column(name = "activity_detail")
 	// private String activityDetail; // 활동 상세 정보 (변경 전/후 값 등)
 

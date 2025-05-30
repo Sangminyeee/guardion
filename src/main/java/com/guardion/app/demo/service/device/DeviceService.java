@@ -31,7 +31,7 @@ public class DeviceService {
 		User user =  userRepository.findByUsername(username)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-		if (deviceRepository.existsBySerialNumber(request.getSerialNumber())) {
+		if (deviceRepository.existsByUserIdAndSerialNumber(user.getId(), request.getSerialNumber())) {
 			throw new BusinessException(ErrorCode.DEVICE_ALREADY_REGISTERED);
 		}
 

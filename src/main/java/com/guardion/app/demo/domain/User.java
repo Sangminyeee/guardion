@@ -1,9 +1,12 @@
 package com.guardion.app.demo.domain;
 
 import com.guardion.app.demo.domain.common.BaseEntity;
+import com.guardion.app.demo.eunms.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,9 +41,8 @@ public class User extends BaseEntity {
 	@Column(name = "institution_name")
 	private String institution;
 
-	@Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'USER'")
-	private String role;
-
-	// @Column(name = "last_login_at")
-	// private LocalDateTime lastLoginAt; :)
+	@Builder.Default
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private UserRole role = UserRole.VIEWER;
 }

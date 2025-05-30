@@ -39,6 +39,6 @@ public class EnterService {
 			throw new BusinessException(ErrorCode.INVALID_PASSWORD);
 		}
 
-		return jwtProvider.createToken(user.getUsername(), user.getRole());
+		return jwtProvider.createToken(user.getUsername(), user.getRole().name());
 	}
 }
