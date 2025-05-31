@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_housing_page.dart';
+import 'housing_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/guardion_logo.png', width: 40),
+            Image.asset('assets/images/BSMS_Logo_TPBG.png', width: 40),
             const SizedBox(width: 12),
             const Text(
               'GUARDION',
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
               child: SizedBox(
                 width: 180,
                 child: Image.asset(
-                  'assets/images/guardion_logo.png',
+                  'assets/images/BSMS_Logo_TPBG.png',
                   fit: BoxFit.contain,
                 ),
               ),
@@ -104,7 +105,14 @@ class _HomePageState extends State<HomePage> {
                   side: const BorderSide(color: Color(0xFF00A9E0), width: 2),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/housingDetail');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              HousingDetailPage(serialNumber: selectedSerial),
+                    ),
+                  );
                 },
                 child: const Text(
                   '함체 데이터 상세보기',
@@ -215,7 +223,10 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pushNamed(
                       context,
                       '/alertDetail',
-                      arguments: alert,
+                      arguments: {
+                        'alert': alert,
+                        'serialNumber': selectedSerial,
+                      },
                     );
                   },
                   child: Card(

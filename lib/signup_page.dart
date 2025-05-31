@@ -22,7 +22,7 @@ class _SignupPageState extends State<SignupPage> {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            Image.asset('assets/images/guardion_logo.png', width: 40),
+            Image.asset('assets/images/BSMS_Logo_TPBG.png', width: 40),
             const SizedBox(width: 12),
             const Text(
               'GUARDION',
@@ -49,11 +49,11 @@ class _SignupPageState extends State<SignupPage> {
                 // ✅ 바디 상단 로고 추가
                 Center(
                   child: Image.asset(
-                    'assets/images/guardion_logo.png',
+                    'assets/images/BSMS_Logo_TPBG.png',
                     width: 120,
                     height: 120,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Text('이미지 로딩 실패'),
+                    errorBuilder:
+                        (context, error, stackTrace) => Text('이미지 로딩 실패'),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -68,8 +68,9 @@ class _SignupPageState extends State<SignupPage> {
                 _buildTextField(
                   label: '기관 코드',
                   onChanged: (val) => institutionCode = val,
-                  validator: (val) =>
-                  val == null || val.isEmpty ? '기관 코드를 입력해주세요' : null,
+                  validator:
+                      (val) =>
+                          val == null || val.isEmpty ? '기관 코드를 입력해주세요' : null,
                 ),
                 SizedBox(height: 16),
 
@@ -77,8 +78,9 @@ class _SignupPageState extends State<SignupPage> {
                 _buildTextField(
                   label: '사용자 이름',
                   onChanged: (val) => username = val,
-                  validator: (val) =>
-                  val == null || val.isEmpty ? '사용자 이름을 입력해주세요' : null,
+                  validator:
+                      (val) =>
+                          val == null || val.isEmpty ? '사용자 이름을 입력해주세요' : null,
                 ),
                 SizedBox(height: 16),
 
@@ -87,8 +89,9 @@ class _SignupPageState extends State<SignupPage> {
                   label: '비밀번호',
                   obscureText: true,
                   onChanged: (val) => password = val,
-                  validator: (val) =>
-                  val == null || val.isEmpty ? '비밀번호를 입력해주세요' : null,
+                  validator:
+                      (val) =>
+                          val == null || val.isEmpty ? '비밀번호를 입력해주세요' : null,
                 ),
                 SizedBox(height: 16),
 
@@ -122,8 +125,8 @@ class _SignupPageState extends State<SignupPage> {
                 // 로그인 이동 버튼
                 Center(
                   child: TextButton(
-                    onPressed: () =>
-                        Navigator.pushReplacementNamed(context, '/login'),
+                    onPressed:
+                        () => Navigator.pushReplacementNamed(context, '/login'),
                     child: Text('이미 계정이 있으신가요? 로그인'),
                   ),
                 ),
@@ -160,31 +163,34 @@ class _SignupPageState extends State<SignupPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          backgroundColor: Colors.lightBlue[100],
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('회원가입이 완료되었습니다!', style: TextStyle(fontSize: 18)),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  minimumSize: Size(double.infinity, 40),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                child: Text('로그인 화면으로 돌아가기'),
+        builder:
+            (_) => AlertDialog(
+              backgroundColor: Colors.lightBlue[100],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
               ),
-            ],
-          ),
-        ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('회원가입이 완료되었습니다!', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacementNamed(context, '/login');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      minimumSize: Size(double.infinity, 40),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text('로그인 화면으로 돌아가기'),
+                  ),
+                ],
+              ),
+            ),
       );
     }
   }

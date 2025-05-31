@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HousingDetailPage extends StatelessWidget {
-  const HousingDetailPage({super.key});
+  final String serialNumber;
+  const HousingDetailPage({super.key, this.serialNumber = 'AX0132F'});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,47 @@ class HousingDetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              child: Card(
+                color: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: const BorderSide(color: Color(0xFF00A9E0), width: 2),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.qr_code, color: Color(0xFF00A9E0)),
+                      const SizedBox(width: 10),
+                      Text(
+                        '함체 일련번호: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        serialNumber,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF00A9E0),
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             _infoCard('현재 온도', '25°C', Colors.red),
             const SizedBox(height: 16),
             _infoCard('현재 습도', '60%', const Color(0xFF00A9E0)),
