@@ -90,8 +90,6 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             ),
-<<<<<<< HEAD
-=======
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -118,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
             Row(
               children: [
@@ -212,38 +210,6 @@ class _HomePageState extends State<HomePage> {
               separatorBuilder: (context, idx) => const SizedBox(height: 8),
               itemBuilder: (context, idx) {
                 final alert = alerts[idx];
-<<<<<<< HEAD
-                return Card(
-                  color:
-                      alert['msg']!.contains('정상')
-                          ? const Color(0xFFE6F7FD)
-                          : const Color(0xFFFFD6D6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${alert['time']} - ${alert['msg']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  alert['msg']!.contains('정상')
-                                      ? const Color(0xFF00A9E0)
-                                      : Colors.red,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-=======
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
@@ -283,7 +249,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
->>>>>>> fa49f4d (함체데이터 + 알람 상세보기 화면 추가)
                     ),
                   ),
                 );
