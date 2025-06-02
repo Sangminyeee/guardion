@@ -14,10 +14,10 @@ class _HomePageState extends State<HomePage> {
   String selectedSerial = 'AX0132F';
 
   final List<Map<String, String>> alerts = [
-    {'time': '2025.05.10 20:44', 'msg': '고온 경고'},
-    {'time': '2025.05.10 19:31', 'msg': '습도 정상'},
-    {'time': '2025.05.09 18:10', 'msg': '저온 경고'},
-    {'time': '2025.05.08 14:22', 'msg': '배터리 교체 필요'},
+    {'serial': 'AX0132F', 'time': '2025.05.10 20:44', 'msg': '고온 경고'},
+    {'serial': 'BX8831D', 'time': '2025.05.10 19:31', 'msg': '습도 정상'},
+    {'serial': 'AX0132F', 'time': '2025.05.09 18:10', 'msg': '저온 경고'},
+    {'serial': 'ZX0192P', 'time': '2025.05.08 14:22', 'msg': '배터리 교체 필요'},
   ];
 
   @override
@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Expanded(
                             child: Text(
-                              '${alert['time']} - ${alert['msg']}',
+                              '[${alert['serial']}] ${alert['time']} - ${alert['msg']}',
                               style: TextStyle(
                                 fontSize: 16,
                                 color:

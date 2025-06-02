@@ -147,6 +147,30 @@ class AlertDetailPage extends StatelessWidget {
                               ),
                             ),
                           ],
+                          const SizedBox(height: 32),
+                          // 데이터 상세정보 추가
+                          const Text(
+                            '데이터 상세정보',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _dataDetailRow('현재 온도', '25°C', Colors.red),
+                          _dataDetailRow('현재 습도', '60%', Color(0xFF00A9E0)),
+                          _dataDetailRow('온도 변화율', '+3%', Colors.orange),
+                          _dataDetailRow('습도 변화율', '-5%', Colors.blueAccent),
+                          _dataDetailRow('뚜껑 열림 여부', '닫힘', Colors.green),
+                          _dataDetailRow(
+                            '배터리 존재 여부',
+                            '있음',
+                            Colors.teal,
+                            titleFontSize: 13,
+                          ),
+                          _dataDetailRow('알람 상태', '정상', Colors.purple),
+                          _dataDetailRow('불빛 상태', '켜짐', Color(0xFF00A9E0)),
                         ],
                       ),
                     ),
@@ -165,5 +189,36 @@ class AlertDetailPage extends StatelessWidget {
     if (msg.contains('저온')) return '온도가 낮으니 보온 조치를 해주세요.';
     if (msg.contains('배터리')) return '배터리 교체가 필요합니다.';
     return '상세 내용을 확인하세요.';
+  }
+
+  Widget _dataDetailRow(
+    String title,
+    String value,
+    Color valueColor, {
+    double titleFontSize = 15,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.5),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              title,
+              style: TextStyle(fontSize: titleFontSize, color: Colors.black54),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
