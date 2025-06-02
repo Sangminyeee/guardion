@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
   @override
@@ -13,6 +14,20 @@ class _SignupPageState extends State<SignupPage> {
   String username = '';
   String password = '';
   String confirmPassword = '';
+
+  Future<bool> signupApi() async {
+    final url = Uri.parse('http://3.39.253.151:8080/signup');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "username": username,
+        "password": password,
+        "institution": institutionCode,
+      }),
+    );
+    return response.statusCode == 200;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,40 +173,66 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void _handleSignup() {
+  void _handleSignup() async {
     if (_formKey.currentState!.validate()) {
+      // 로딩 표시
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder:
-            (_) => AlertDialog(
-              backgroundColor: Colors.lightBlue[100],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('회원가입이 완료되었습니다!', style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.pushReplacementNamed(context, '/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      minimumSize: Size(double.infinity, 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text('로그인 화면으로 돌아가기'),
-                  ),
-                ],
-              ),
-            ),
+        builder: (_) => Center(child: CircularProgressIndicator()),
       );
+
+      bool result = await signupApi();
+
+      Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
+
+      if (result) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            backgroundColor: Colors.lightBlue[100],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('회원가입이 완료되었습니다!', style: TextStyle(fontSize: 18)),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    minimumSize: Size(double.infinity, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text('로그인 화면으로 돌아가기'),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('회원가입 실패'),
+            content: Text('회원가입에 실패했습니다. 정보를 확인해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('확인'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 }
