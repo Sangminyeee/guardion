@@ -5,7 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GetTemperatureHumidityResponse {
+public class GetDeviceDataResponse {
+
 	private Float temperature;
 	private Float Humidity;
+	private Float temperatureDiff;
+	private Float humidityDiff;
+	private boolean door;
 }

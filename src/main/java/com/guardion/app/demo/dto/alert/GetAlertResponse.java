@@ -1,5 +1,7 @@
 package com.guardion.app.demo.dto.alert;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetAlertResponse {
 
-	private String alertCode;
+	private String deviceSerialNumber;
+	private LocalDateTime alertTime;
 	private String alertType;
-	private String alertMessage;
 }

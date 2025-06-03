@@ -38,6 +38,12 @@ public class DeviceData extends BaseEntity {
 	@Column(name = "internal_humidity")
 	private Float internalHumidity;
 
+	@Column(name = "temperature_diff")
+	private Float temperatureDiff; // 이전 데이터 기준 차이
+
+	@Column(name = "humifity_diff")
+	private Float humidityDiff; // 이전 데이터 기준 차이
+
 	@Column(name = "door_status")
 	private Boolean doorStatus; // 1:open, 0:closed
 

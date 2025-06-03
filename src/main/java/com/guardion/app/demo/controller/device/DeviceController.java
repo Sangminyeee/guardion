@@ -28,6 +28,7 @@ public class DeviceController {
 
 	private final DeviceService deviceService;
 
+	//함체 등록
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> registerDevice(
 		@RequestBody @Valid RegisterDeviceRequest request,
@@ -38,6 +39,7 @@ public class DeviceController {
 		return ResponseEntity.ok(ApiResponse.successWithNoData());
 	}
 
+	//사용자의 모든 함체 조회
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<GetUsersAllDeviceResponse>>> getUsersAllDevice(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -47,6 +49,7 @@ public class DeviceController {
 		return ResponseEntity.ok(ApiResponse.success(list));
 	}
 
+	//개별 함체 정보 조회
 	@GetMapping("{serialNumber}")
 	public ResponseEntity<ApiResponse<GetDeviceInfoResponse>> getDeviceInfo(
 		@PathVariable String serialNumber,

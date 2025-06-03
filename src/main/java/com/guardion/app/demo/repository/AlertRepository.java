@@ -9,8 +9,7 @@ import com.guardion.app.demo.domain.Alert;
 
 @Repository
 public interface AlertRepository extends JpaRepository<Alert, Long> {
-	// Custom query methods can be defined here if needed
-	// For example:
 	// List<Alert> findByAlertType(String alertType);
 	List<Alert> findByDeviceIdOrderByCreatedAtDesc(Long deviceId);
+	List<Alert> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

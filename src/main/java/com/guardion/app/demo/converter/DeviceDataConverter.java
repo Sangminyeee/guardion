@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
+import com.guardion.app.demo.dto.deviceData.GetDeviceDataResponse;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequest;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
@@ -46,7 +47,16 @@ public class DeviceDataConverter {
 	}
 
 	public GetTemperatureHumidityResponse deviceDataToGetTemperatureHumidityResponse(DeviceData deviceData) {
-		//이부분
-		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity(), 0L, 0L);
+		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity());
+	}
+
+	public GetDeviceDataResponse deviceDataToGetDeviceDataResponse(DeviceData deviceData) {
+		return new GetDeviceDataResponse(
+			deviceData.getInternalTemperature(),
+			deviceData.getInternalHumidity(),
+			deviceData.getTemperatureDiff(),
+			deviceData.getHumidityDiff(),
+			deviceData.getDoorStatus()
+		);
 	}
 }
