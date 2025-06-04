@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class GetTemperatureHumidityResponse {
-	private Float temperature;
-	private Float Humidity;
+	private double temperature;
+	private double Humidity;
 }

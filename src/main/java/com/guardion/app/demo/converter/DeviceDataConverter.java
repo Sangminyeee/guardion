@@ -9,6 +9,9 @@ import com.guardion.app.demo.dto.deviceData.GetDeviceDataResponse;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequest;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
+import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed2;
+import com.guardion.app.demo.eunms.DeviceState;
+import com.guardion.app.demo.eunms.DoorStatus;
 import com.guardion.app.demo.repository.DeviceRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,10 +42,26 @@ public class DeviceDataConverter {
 				.device(device)
 				.internalTemperature(dto.getTemperature())
 				.internalHumidity(dto.getHumidity())
-				.doorStatus(dto.isDoor())
+				.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
 				.batteryExists(dto.isBattery())
 				.beepStatus(dto.isBeep())
 				.lightStatus(dto.isLight())
+				.build();
+	}
+
+	public DeviceData mqttTestRequestDetailed2ToDeviceData(MqttTestRequestDetailed2 dto) {
+		Device device = deviceRepository.findBySerialNumber(dto.getContainer())
+				.orElseThrow(() -> new RuntimeException("Device not found"));
+
+		return DeviceData.builder()
+				.device(device)
+				.internalTemperature(dto.getTemp())
+				.internalHumidity(dto.getHum())
+				.temperatureDiff(dto.getTempDiff())
+				.humidityDiff(dto.getHumDiff())
+				.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
+				.batteryExists(dto.isBattery())
+				.state(DeviceState.valueOf(dto.getState().toUpperCase()))
 				.build();
 	}
 
@@ -56,7 +75,7 @@ public class DeviceDataConverter {
 			deviceData.getInternalHumidity(),
 			deviceData.getTemperatureDiff(),
 			deviceData.getHumidityDiff(),
-			deviceData.getDoorStatus()
+			deviceData.getDoorStatus().toString()
 		);
 	}
 }

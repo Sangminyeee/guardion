@@ -13,11 +13,11 @@ public class GetAlertResponseDetailed {
 	private String alertType;
 	private String alertMessage;
 
-	private Float internalTemperature;
-	private Float internalHumidity;
-	private Float temperatureDiff;
-	private Float humidityDiff;
-	private Boolean doorStatus; // 1:open, 0:closed
+	private double internalTemperature;
+	private double internalHumidity;
+	private double temperatureDiff;
+	private double humidityDiff;
+	private String doorStatus; // 1:open, 0:closed
 	private Boolean batteryExists; // 1:yes, 0:no
 	private Boolean beepStatus; // 1:on, 0:off
 	private Boolean lightStatus; // 1:on, 0:off

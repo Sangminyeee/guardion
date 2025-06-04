@@ -3,6 +3,7 @@ package com.guardion.app.demo.domain;
 import java.time.LocalDateTime;
 
 import com.guardion.app.demo.domain.common.BaseEntity;
+import com.guardion.app.demo.eunms.DeviceState;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

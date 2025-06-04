@@ -9,7 +9,7 @@ public class MqttTestRequestDetailed {
 	private Long deviceId;
 	private Float temperature;
 	private Float humidity;
-	private boolean door;
+	private String door;
 	private boolean battery;
 	private boolean beep;
 	private boolean light;
@@ -21,7 +21,7 @@ public class MqttTestRequestDetailed {
 		this.deviceId = null;
 		this.temperature = null;
 		this.humidity = null;
-		this.door = false;
+		this.door = null;
 		this.battery = false;
 		this.beep = false;
 		this.light = false;

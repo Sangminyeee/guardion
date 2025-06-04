@@ -3,6 +3,8 @@ package com.guardion.app.demo.domain;
 import java.time.LocalDateTime;
 
 import com.guardion.app.demo.domain.common.BaseEntity;
+import com.guardion.app.demo.eunms.DeviceState;
+import com.guardion.app.demo.eunms.DoorStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,19 +35,19 @@ public class DeviceData extends BaseEntity {
 	private Device device;
 
 	@Column(name = "internal_temperature")
-	private Float internalTemperature;
+	private double internalTemperature;
 
 	@Column(name = "internal_humidity")
-	private Float internalHumidity;
+	private double internalHumidity;
 
 	@Column(name = "temperature_diff")
-	private Float temperatureDiff; // 이전 데이터 기준 차이
+	private double temperatureDiff; // 이전 데이터 기준 차이
 
 	@Column(name = "humifity_diff")
-	private Float humidityDiff; // 이전 데이터 기준 차이
+	private double humidityDiff; // 이전 데이터 기준 차이
 
 	@Column(name = "door_status")
-	private Boolean doorStatus; // 1:open, 0:closed
+	private DoorStatus doorStatus;
 
 	@Column(name = "battery_exists")
 	private Boolean batteryExists; // 1:yes, 0:no
@@ -56,7 +58,9 @@ public class DeviceData extends BaseEntity {
 	@Column(name = "light_status")
 	private Boolean lightStatus; // 1:on, 0:off
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "device_gps_id")
-	private DeviceGpsLog deviceGps;
+	private DeviceState state;
+
+	// @OneToOne(cascade = CascadeType.ALL)
+	// @JoinColumn(name = "device_gps_id")
+	// private DeviceGpsLog deviceGps;
 }

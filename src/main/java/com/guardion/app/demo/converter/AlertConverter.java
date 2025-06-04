@@ -33,7 +33,7 @@ public class AlertConverter {
 			alert.getDeviceData().getInternalHumidity(),
 			alert.getDeviceData().getTemperatureDiff(),
 			alert.getDeviceData().getHumidityDiff(),
-			alert.getDeviceData().getDoorStatus(),
+			alert.getDeviceData().getDoorStatus().toString(),
 			alert.getDeviceData().getBatteryExists(),
 			alert.getDeviceData().getBeepStatus(),
 			alert.getDeviceData().getLightStatus()

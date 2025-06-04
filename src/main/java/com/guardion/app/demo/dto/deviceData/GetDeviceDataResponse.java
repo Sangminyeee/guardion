@@ -1,5 +1,7 @@
 package com.guardion.app.demo.dto.deviceData;
 
+import com.guardion.app.demo.domain.DeviceData;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,9 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetDeviceDataResponse {
 
-	private Float temperature;
-	private Float Humidity;
-	private Float temperatureDiff;
-	private Float humidityDiff;
-	private boolean door;
+	private double temperature;
+	private double Humidity;
+	private double temperatureDiff;
+	private double humidityDiff;
+	private String door;
 }
