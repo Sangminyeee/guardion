@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.guardion.app.demo.dto.alert.SseSendAlert;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
+import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed2;
 
 @RestController
 @RequestMapping("/sse")
@@ -32,11 +34,24 @@ public class SseController {
 	}
 
 	// 센서 데이터가 수신될 때 이 메서드를 호출한다고 가정
-	public void sendSensorDataToClients(MqttTestRequestDetailed data) {
+	public void sendSensorDataToClients(MqttTestRequestDetailed2 data) {
 		for (SseEmitter emitter : emitters) {
 			try {
 				emitter.send(SseEmitter.event()
 					.name("sensor-data")
+					.data(data));
+			} catch (Exception e) {
+				emitters.remove(emitter); // 끊어진 emitter 제거
+			}
+		}
+	}
+
+	// 알림 쏘기
+	public void sendAlertToClients(SseSendAlert data) {
+		for (SseEmitter emitter : emitters) {
+			try {
+				emitter.send(SseEmitter.event()
+					.name("alert-data")
 					.data(data));
 			} catch (Exception e) {
 				emitters.remove(emitter); // 끊어진 emitter 제거

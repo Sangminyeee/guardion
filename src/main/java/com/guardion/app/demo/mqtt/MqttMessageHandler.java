@@ -77,6 +77,6 @@ public class MqttMessageHandler {
 			e.printStackTrace();
 		}
 
-		sseController.sendSensorDataToClients(mqttData);
+		// sseController.sendSensorDataToClients(mqttData);
 	}
 }

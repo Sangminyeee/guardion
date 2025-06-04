@@ -1,18 +1,28 @@
 package com.guardion.app.demo.mqtt;
 
+import static com.guardion.app.demo.eunms.AlertSeverity.*;
+
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardion.app.demo.converter.DeviceDataConverter;
+import com.guardion.app.demo.domain.Alert;
+import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
+import com.guardion.app.demo.domain.User;
+import com.guardion.app.demo.dto.alert.SseSendAlert;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed2;
+import com.guardion.app.demo.repository.AlertRepository;
 import com.guardion.app.demo.repository.DeviceDataRepository;
+import com.guardion.app.demo.repository.DeviceRepository;
+import com.guardion.app.demo.sse.SseController;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +33,9 @@ public class MqttSubscriber implements MqttCallback {
 
 	private final DeviceDataConverter deviceDataConverter;
 	private final DeviceDataRepository deviceDataRepository;
+	private final AlertRepository alertRepository;
+	private final SseController sseController;
+	private final DeviceRepository deviceRepository;
 
 	@Value("${mqtt.broker}")
 	private String BROKER; // MQTT 브로커 주소
@@ -56,6 +69,7 @@ public class MqttSubscriber implements MqttCallback {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) {
+		boolean shouldAlert = false;
 		System.out.println("Received message:");
 		System.out.println("Topic: " + topic);
 		System.out.println("Message: " + new String(message.getPayload()));
@@ -64,13 +78,45 @@ public class MqttSubscriber implements MqttCallback {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		MqttTestRequestDetailed2 mqttData = null;
+
+		DeviceData entity = null;
 		try {
 			mqttData = objectMapper.readValue(payload, MqttTestRequestDetailed2.class);
 			// DeviceData entity = dto.toEntity();
-			DeviceData entity = deviceDataConverter.mqttTestRequestDetailed2ToDeviceData(mqttData);
+			entity = deviceDataConverter.mqttTestRequestDetailed2ToDeviceData(mqttData);
 			deviceDataRepository.save(entity);
+			if(!entity.getState().toString().equals("NORMAL")) {
+				System.out.println("Alert condition met: " + entity.getState().toString());
+				shouldAlert = true;
+			}
 		} catch (Exception e) {
+			System.out.println("Error processing MQTT message: " + e.getMessage());
 			e.printStackTrace();
+		}
+
+		sseController.sendSensorDataToClients(mqttData);
+		System.out.println("After sse controller");
+
+		User user = entity.getDevice().getUser();
+		System.out.println("userId: " + user.getUsername());
+
+		if(shouldAlert) {
+			System.out.println("Sending alert for device: " + entity.getDevice().getId());
+
+			Alert alert = Alert.builder()
+				.user(user)
+				.device(entity.getDevice())
+				.deviceData(entity)
+				.build();
+
+			//알림 dto 로 변경
+			SseSendAlert data = SseSendAlert.builder()
+				.deviceState(entity.getState().toString())
+				.build();
+
+			sseController.sendAlertToClients(data);
+			alertRepository.save(alert);
+			// System.out.println("Alert saved to repository: " + alert.getId());
 		}
 	}
 

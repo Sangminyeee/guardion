@@ -9,6 +9,8 @@ import com.guardion.app.demo.eunms.DoorStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +48,7 @@ public class DeviceData extends BaseEntity {
 	@Column(name = "humifity_diff")
 	private double humidityDiff; // 이전 데이터 기준 차이
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "door_status")
 	private DoorStatus doorStatus;
 
@@ -58,6 +61,8 @@ public class DeviceData extends BaseEntity {
 	@Column(name = "light_status")
 	private Boolean lightStatus; // 1:on, 0:off
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "state")
 	private DeviceState state;
 
 	// @OneToOne(cascade = CascadeType.ALL)

@@ -41,9 +41,8 @@ public class Alert extends BaseEntity {
 	@Column(name = "alert_code")
 	private String alertCode;
 
-	@Enumerated(EnumType.STRING)
 	@Column(name = "alert_type")
-	private AlertType alertType;
+	private String alertType;
 
 	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "device_data_id")
