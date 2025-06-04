@@ -1,10 +1,202 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '함체 등록',
+      home: AddHousingPage(),
+      routes: {
+        '/home': (_) => const HomePage(),
+      },
+    );
+  }
+}
+
+class AddHousingPage extends StatefulWidget {
+  const AddHousingPage({super.key});
+
+  @override
+  State<AddHousingPage> createState() => _AddHousingPageState();
+}
+
+class _AddHousingPageState extends State<AddHousingPage> {
+  final TextEditingController _controller = TextEditingController();
+  bool _isLoading = false;
+
+  // 실제 엔드포인트로 수정!
+  final String apiUrl = 'http://3.39.253.151:8080/device';
+
+  Future<bool> registerSerialNumber(String serial) async {
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'serialNumber': serial}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // success가 true이고 data가 비어있지 않으면 성공
+        return data['success'] == true && (data['data'] as List).isNotEmpty;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // 네트워크 오류 등
+      return false;
+    }
+  }
+
+  void _onConfirmPressed() async {
+    final serial = _controller.text.trim();
+    if (serial.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    final isSuccess = await registerSerialNumber(serial);
+    setState(() => _isLoading = false);
+
+    await showResultDialog(
+      context,
+      isSuccess: isSuccess,
+      serialNumber: serial,
+      onContinue: () {
+        Navigator.pop(context); // 다이얼로그 닫기
+        _controller.clear();    // 입력폼 초기화
+      },
+      onHome: () {
+        Navigator.pop(context); // 다이얼로그 닫기
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          '함체 등록',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: false,
+      ),
+      backgroundColor: const Color(0xFFF7F7F7),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 32),
+            const Text(
+              '함체 등록',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00A9E0),
+              ),
+            ),
+            const SizedBox(height: 24),
+            RichText(
+              text: const TextSpan(
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+                children: [
+                  TextSpan(text: '소유하고 계신 배터리 함체의 '),
+                  TextSpan(
+                    text: '시리얼넘버',
+                    style: TextStyle(
+                      color: Color(0xFF00A9E0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(text: '를 입력해주세요.'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: '배터리함체 시리얼넘버',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF27C2F3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: _isLoading ? null : _onConfirmPressed,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                  '확인',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 Future<void> showResultDialog(
-  BuildContext context, {
-  required bool isSuccess,
-  required String serialNumber,
-}) {
+    BuildContext context, {
+      required bool isSuccess,
+      required String serialNumber,
+      required VoidCallback onContinue,
+      required VoidCallback onHome,
+    }) {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -39,14 +231,13 @@ Future<void> showResultDialog(
                             fontSize: 20,
                           ),
                         ),
-                        TextSpan(text: isSuccess ? '의 등록이 ' : '의 등록이 '),
+                        const TextSpan(text: '의 등록이 '),
                         TextSpan(
                           text: isSuccess ? '완료' : '실패',
                           style: TextStyle(
-                            color:
-                                isSuccess
-                                    ? const Color(0xFF00A9E0)
-                                    : Colors.red,
+                            color: isSuccess
+                                ? const Color(0xFF00A9E0)
+                                : Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -70,10 +261,7 @@ Future<void> showResultDialog(
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              // TODO: 성공 시 계속 등록, 실패 시 재시도 로직 추가
-                              Navigator.pop(context);
-                            },
+                            onPressed: onContinue,
                             child: Text(
                               isSuccess ? '계속 등록하기' : '다시 시도하기',
                               style: const TextStyle(
@@ -99,10 +287,7 @@ Future<void> showResultDialog(
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              // TODO: 홈으로 이동 로직 추가
-                              Navigator.pop(context);
-                            },
+                            onPressed: onHome,
                             child: const Text(
                               '홈으로 이동',
                               style: TextStyle(
@@ -137,4 +322,16 @@ Future<void> showResultDialog(
       );
     },
   );
+}
+
+// 홈화면 데모용
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('홈')),
+      body: const Center(child: Text('홈 화면입니다')),
+    );
+  }
 }

@@ -7,12 +7,14 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
+String? globalToken;
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
   bool autoLogin = false;
+
+
 
   Future<bool> loginApi() async {
     final url = Uri.parse('http://3.39.253.151:8080/login');
@@ -20,12 +22,24 @@ class _LoginPageState extends State<LoginPage> {
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        "username": email,    // email 변수에 사용자 이름이 들어있음
+        "username": email,
         "password": password,
       }),
     );
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      // 헤더에서 토큰 추출 (서버에서 실제로 어떤 키로 주는지 확인!)
+      globalToken = response.headers['authorization']; // 또는 'Authorization'
+      print('로그인 성공! 받은 토큰값: $globalToken');  // <-- 여기 추가
+      if (globalToken == null) {
+        print('⚠️ 토큰이 null입니다. 헤더명(authorization/Authorization) 또는 서버 응답을 확인하세요.');
+      }
+      return true;
+    } else {
+      print('로그인 실패. statusCode: ${response.statusCode}, body: ${response.body}');
+    }
+    return false;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +165,6 @@ class _LoginPageState extends State<LoginPage> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // 로딩 표시
                       showDialog(
                         context: context,
                         barrierDismissible: false,

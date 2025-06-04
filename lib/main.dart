@@ -13,9 +13,12 @@ void main() {
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => SignupPage(),
-        '/home': (context) => HomePage(),
+        '/home': (context) =>  HomePage(),
         '/housingDetail': (context) => const HousingDetailPage(),
-        '/alertDetail': (context) => const AlertDetailPage(),
+        '/alertDetail': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as String;
+          return AlertDetailPage(serialNumber: args);
+        },
         '/find-id-pw': (context) => FindIdPwPage(),
       },
     ),

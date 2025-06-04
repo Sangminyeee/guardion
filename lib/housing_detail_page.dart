@@ -1,8 +1,99 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'login_page.dart';
 
-class HousingDetailPage extends StatelessWidget {
+
+
+// 1. 데이터 모델 정의
+class HousingDetail {
+  final double temperature;
+  final double temperatureDiff;
+  final double humidity;
+  final double humidityDiff;
+  final String door;
+
+  HousingDetail({
+    required this.temperature,
+    required this.temperatureDiff,
+    required this.humidity,
+    required this.humidityDiff,
+    required this.door,
+  });
+
+  factory HousingDetail.fromJson(Map<String, dynamic> json) {
+    return HousingDetail(
+      temperature: (json['temperature'] ?? 0).toDouble(),
+      temperatureDiff: (json['temperatureDiff'] ?? 0).toDouble(),
+      humidity: (json['humidity'] ?? 0).toDouble(),
+      humidityDiff: (json['humidityDiff'] ?? 0).toDouble(),
+      door: json['door'] ?? '',
+    );
+  }
+}
+
+// 2. API 호출 함수
+Future<HousingDetail?> fetchHousingDetail(String serialNumber) async {
+  final url = Uri.parse(
+    'http://3.39.253.151:8080/device-data/$serialNumber',
+  );
+
+  if (globalToken == null) {
+    print('토큰이 없습니다. 로그인부터 하세요!');
+    return null;
+  }
+
+  print('[API REQUEST] GET $url');
+  print('사용할 토큰: $globalToken');
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Authorization': globalToken!,
+    },
+  );
+
+  print('[API RESPONSE] statusCode: ${response.statusCode}');
+  print('[API RESPONSE] body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> res = json.decode(response.body);
+    if (res['success'] == true && res['data'] != null) {
+      return HousingDetail.fromJson(res['data']);
+    }
+  }
+  return null;
+}
+
+// 3. 상세 페이지 위젯
+class HousingDetailPage extends StatefulWidget {
   final String serialNumber;
   const HousingDetailPage({super.key, this.serialNumber = 'AX0132F'});
+
+  @override
+  State<HousingDetailPage> createState() => _HousingDetailPageState();
+}
+
+class _HousingDetailPageState extends State<HousingDetailPage> {
+  HousingDetail? detail;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDetail();
+  }
+
+  Future<void> _loadDetail() async {
+    setState(() {
+      isLoading = true;
+    });
+    final result = await fetchHousingDetail(widget.serialNumber);
+    setState(() {
+      detail = result;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,64 +116,25 @@ class HousingDetailPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: ListView(
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : detail == null
+            ? const Center(child: Text('데이터를 불러올 수 없습니다.'))
+            : ListView(
           children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              child: Card(
-                color: Colors.white,
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  side: const BorderSide(color: Color(0xFF00A9E0), width: 2),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.qr_code, color: Color(0xFF00A9E0)),
-                      const SizedBox(width: 10),
-                      Text(
-                        '함체 일련번호: ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        serialNumber,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Color(0xFF00A9E0),
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            _infoCard('온도', '${detail!.temperature}°C', Colors.red),
+            const SizedBox(height: 16),
+            _infoCard('습도', '${detail!.humidity}%', Colors.blue),
+            const SizedBox(height: 16),
+            _infoCard('온도 변화율', '${detail!.temperatureDiff}%', Colors.orange),
+            const SizedBox(height: 16),
+            _infoCard('습도 변화율', '${detail!.humidityDiff}%', Colors.teal),
+            const SizedBox(height: 16),
+            _infoCard(
+              '뚜껑 열림 여부',
+              detail!.door == 'OPEN' ? '열림' : '닫힘',
+              detail!.door == 'OPEN' ? Colors.green : Colors.grey,
             ),
-            _infoCard('현재 온도', '25°C', Colors.red),
-            const SizedBox(height: 16),
-            _infoCard('현재 습도', '60%', const Color(0xFF00A9E0)),
-            const SizedBox(height: 16),
-            _infoCard('온도 변화율', '+3%', Colors.orange),
-            const SizedBox(height: 16),
-            _infoCard('습도 변화율', '-5%', Colors.blueAccent),
-            const SizedBox(height: 16),
-            _infoCard('뚜껑 열림 여부', '닫힘', Colors.green),
-            const SizedBox(height: 16),
-            _infoCard('배터리 존재 여부', '있음', Colors.teal),
-            const SizedBox(height: 16),
-            _infoCard('알람 상태', '정상', Colors.purple),
-            const SizedBox(height: 16),
-            _infoCard('불빛 상태', '켜짐', const Color(0xFF00A9E0)),
           ],
         ),
       ),
