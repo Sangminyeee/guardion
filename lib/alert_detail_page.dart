@@ -1,90 +1,134 @@
+// 1. import 정리
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// 1. 데이터 모델 정의
-class DeviceTempHumidityData {
-  final double temperature;
+import 'add_housing_result_dialog.dart';
+
+// 2. 데이터 모델 정의 (생략, 기존과 동일)
+// AlertDetailData 모델 정의
+class AlertDetailData {
+  final String deviceSerialNumber;
+  final DateTime alertTime;
+  final String alertType;
+  final String alertMessage;
+  final double internalTemperature;
+  final double internalHumidity;
   final double temperatureDiff;
-  final double humidity;
   final double humidityDiff;
-  final bool door;
+  final String doorStatus;
+  final bool batteryExists;
+  final bool beepStatus;
+  final bool lightStatus;
 
-  DeviceTempHumidityData({
-    required this.temperature,
+  AlertDetailData({
+    required this.deviceSerialNumber,
+    required this.alertTime,
+    required this.alertType,
+    required this.alertMessage,
+    required this.internalTemperature,
+    required this.internalHumidity,
     required this.temperatureDiff,
-    required this.humidity,
     required this.humidityDiff,
-    required this.door,
+    required this.doorStatus,
+    required this.batteryExists,
+    required this.beepStatus,
+    required this.lightStatus,
   });
 
-  factory DeviceTempHumidityData.fromJson(Map<String, dynamic> json) {
-    return DeviceTempHumidityData(
-      temperature: (json['temperature'] as num).toDouble(),
-      temperatureDiff: (json['temperatureDiff'] as num).toDouble(),
-      humidity: (json['humidity'] as num).toDouble(),
-      humidityDiff: (json['humidityDiff'] as num).toDouble(),
-      door: json['door'] as bool,
+  factory AlertDetailData.fromJson(Map<String, dynamic> json) {
+    return AlertDetailData(
+      deviceSerialNumber: json['deviceSerialNumber'] as String? ?? '',
+      alertTime: DateTime.parse(json['alertTime'] as String),
+      alertType: json['alertType'] as String? ?? '',
+      alertMessage: json['alertMessage'] as String? ?? '',
+      internalTemperature: (json['internalTemperature'] as num?)?.toDouble() ?? 0,
+      internalHumidity: (json['internalHumidity'] as num?)?.toDouble() ?? 0,
+      temperatureDiff: (json['temperatureDiff'] as num?)?.toDouble() ?? 0,
+      humidityDiff: (json['humidityDiff'] as num?)?.toDouble() ?? 0,
+      doorStatus: json['doorStatus'] as String? ?? '',
+      batteryExists: json['batteryExists'] as bool? ?? false,
+      beepStatus: json['beepStatus'] as bool? ?? false,
+      lightStatus: json['lightStatus'] as bool? ?? false,
     );
   }
 }
 
-// 2. 백엔드 데이터 요청 함수
-Future<DeviceTempHumidityData> fetchTempHumidity({
-  required String serialNumber,
-}) async {
-  final uri = Uri.parse(
-      'http://3.39.253.151:8080/device-data/getTemperatureHumidity?serialNumber=$serialNumber');
-  final response = await http.get(uri);
+// 3. 알림 상세 데이터 요청 함수
+Future<AlertDetailData?> fetchAlertDetail(int alertId) async {
+  final storage = FlutterSecureStorage();
+  final token = await storage.read(key: 'jwt_token');
+  if (token == null) {
+    print('❌ 토큰이 없습니다. 로그인 필요.');
+    return null;
+  }
 
-  if (response.statusCode == 200) {
-    final jsonBody = jsonDecode(response.body);
-    if (jsonBody['success'] == true && jsonBody['data'] != null) {
-      return DeviceTempHumidityData.fromJson(jsonBody['data']);
-    } else {
-      throw Exception('데이터가 없습니다.');
+  final uri = Uri.parse(
+    'http://3.39.253.151:8080/alert/$alertId',
+  );
+  try {
+    final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print('✅ 상태코드: ${response.statusCode}');
+    print('✅ 응답내용: ${response.body}');
+    if (response.statusCode == 401) {
+      await storage.delete(key: 'jwt_token');
+      return null;
     }
-  } else {
-    throw Exception('서버 오류');
+    if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+      if (jsonBody['success'] == true && jsonBody['data'] != null) {
+        return AlertDetailData.fromJson(jsonBody['data']);
+      }
+    }
+    return null;
+  } catch (e) {
+    print('❌ 예외 발생: $e');
+    return null;
   }
 }
 
-// 3. AlertDetailPage 구현
+// 4. AlertDetailPage 위젯
 class AlertDetailPage extends StatelessWidget {
-  final String serialNumber;
 
-  const AlertDetailPage({super.key, required this.serialNumber});
 
+  final int alertId;
+  const AlertDetailPage({super.key, required this.alertId});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('알림 상세')),
-      body: FutureBuilder<DeviceTempHumidityData>(
-        future: fetchTempHumidity(serialNumber: serialNumber),
+      body: FutureBuilder<AlertDetailData?>(
+        future: fetchAlertDetail(alertId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '데이터를 불러올 수 없습니다.\n${snapshot.error}',
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: Text('데이터가 없습니다.'));
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('데이터를 불러올 수 없습니다.'));
           }
           final data = snapshot.data!;
           return ListView(
             padding: const EdgeInsets.all(24),
             children: [
-              _dataDetailRow('현재 온도', '${data.temperature}°C', Colors.red),
-              _dataDetailRow('현재 습도', '${data.humidity}%', const Color(0xFF00A9E0)),
-              _dataDetailRow('온도 변화율', '${data.temperatureDiff}%', Colors.orange),
-              _dataDetailRow('습도 변화율', '${data.humidityDiff}%', Colors.blueAccent),
-              _dataDetailRow('뚜껑 열림 여부', data.door ? '열림' : '닫힘', Colors.green),
+              _detailRow('기기 시리얼', data.deviceSerialNumber),
+              _detailRow('알림 시간', data.alertTime.toString()),
+              _detailRow('알림 유형', data.alertType),
+              _detailRow('알림 메시지', data.alertMessage),
+              _detailRow('내부 온도', '${data.internalTemperature}°C'),
+              _detailRow('내부 습도', '${data.internalHumidity}%'),
+              _detailRow('온도 변화율', '${data.temperatureDiff}%'),
+              _detailRow('습도 변화율', '${data.humidityDiff}%'),
+              _detailRow('뚜껑 상태', data.doorStatus),
+              _detailRow('배터리 존재', data.batteryExists ? '있음' : '없음'),
+              _detailRow('부저 상태', data.beepStatus ? 'ON' : 'OFF'),
+              _detailRow('조명 상태', data.lightStatus ? 'ON' : 'OFF'),
             ],
           );
         },
@@ -92,42 +136,23 @@ class AlertDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _dataDetailRow(String title, String value, Color color) {
+  Widget _detailRow(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           const Spacer(),
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
+          Flexible(child: Text(value, textAlign: TextAlign.right)),
         ],
       ),
     );
   }
 }
 
-// 4. 예시: 앱 시작점 및 AlertDetailPage 호출
+// 5. 앱 시작점
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Alert Detail Demo',
-      home: const AlertDetailPage(serialNumber: 'AX0132F'), // 테스트용 시리얼넘버
-    );
-  }
-}
+

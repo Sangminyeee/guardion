@@ -16,9 +16,10 @@ void main() {
         '/home': (context) =>  HomePage(),
         '/housingDetail': (context) => const HousingDetailPage(),
         '/alertDetail': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as String;
-          return AlertDetailPage(serialNumber: args);
+          final args = ModalRoute.of(context)!.settings.arguments as int;
+          return AlertDetailPage(alertId: args);
         },
+
         '/find-id-pw': (context) => FindIdPwPage(),
       },
     ),
