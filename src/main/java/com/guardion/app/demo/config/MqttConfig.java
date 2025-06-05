@@ -22,7 +22,7 @@ public class MqttConfig {
 	private String clientId;
 
 	@Value("${mqtt.sub-topic}")
-	private String topic;
+	private String topic; //테스트용
 
 	@Bean
 	public MqttClient mqttClient(MqttMessageHandler handler) throws MqttException {
@@ -33,7 +33,7 @@ public class MqttConfig {
 		options.setAutomaticReconnect(true);
 		options.setCleanSession(true);
 		client.connect(options);
-		client.subscribe(topic, handler::messageArrived);
+		client.subscribe(topic, handler::messageArrived); //테스트용
 		return client;
 	}
 }

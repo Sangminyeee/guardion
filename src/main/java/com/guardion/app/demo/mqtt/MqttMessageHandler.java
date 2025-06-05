@@ -25,7 +25,7 @@ public class MqttMessageHandler {
 	private final SseController sseController;
 
 	@Transactional
-	public void messageArrived(String topic, MqttMessage message) {
+	public void messageArrived(String topic, MqttMessage message) { //테스트용
 		String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
 		System.out.println("Received: " + message);
 

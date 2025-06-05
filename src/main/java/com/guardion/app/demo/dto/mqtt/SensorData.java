@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MqttTestRequestDetailed2 {
+public class SensorData {
 	private String container;
 	private double temp;
 	private double hum;
@@ -15,7 +15,7 @@ public class MqttTestRequestDetailed2 {
 	private boolean battery;
 	private String state;
 
-	public MqttTestRequestDetailed2() { // Default constructor
+	public SensorData() { // Default constructor
 		this.container = null;
 		this.temp = 0;
 		this.hum = 0;

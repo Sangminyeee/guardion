@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.guardion.app.demo.dto.alert.SseSendAlert;
-import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
-import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed2;
+import com.guardion.app.demo.dto.mqtt.SensorData;
 
 @RestController
 @RequestMapping("/sse")
@@ -34,7 +33,7 @@ public class SseController {
 	}
 
 	// 센서 데이터가 수신될 때 이 메서드를 호출한다고 가정
-	public void sendSensorDataToClients(MqttTestRequestDetailed2 data) {
+	public void sendSensorDataToClients(SensorData data) {
 		for (SseEmitter emitter : emitters) {
 			try {
 				emitter.send(SseEmitter.event()
@@ -44,6 +43,7 @@ public class SseController {
 				emitters.remove(emitter); // 끊어진 emitter 제거
 			}
 		}
+		// System.out.println("현재 연결된 emitter 수: " + emitters.size());
 	}
 
 	// 알림 쏘기
@@ -57,5 +57,6 @@ public class SseController {
 				emitters.remove(emitter); // 끊어진 emitter 제거
 			}
 		}
+		// System.out.println("현재 연결된 emitter 수: " + emitters.size());
 	}
 }

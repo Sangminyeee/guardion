@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.guardion.app.demo.domain.Alert;
+import com.guardion.app.demo.domain.DeviceData;
 import com.guardion.app.demo.dto.alert.GetAlertResponse;
 import com.guardion.app.demo.dto.alert.GetAlertResponseDetailed;
 
@@ -38,5 +39,16 @@ public class AlertConverter {
 			alert.getDeviceData().getBeepStatus(),
 			alert.getDeviceData().getLightStatus()
 		);
+	}
+
+	public Alert deviceDataToAlert(DeviceData deviceData) {
+
+		return Alert.builder()
+			.user(deviceData.getDevice().getUser())
+			.device(deviceData.getDevice())
+			.alertType(deviceData.getState().toString())
+			.deviceData(deviceData)
+			.message("Device state changed to " + deviceData.getState().toString())
+			.build();
 	}
 }

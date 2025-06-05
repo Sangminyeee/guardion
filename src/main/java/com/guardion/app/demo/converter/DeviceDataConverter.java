@@ -9,7 +9,7 @@ import com.guardion.app.demo.dto.deviceData.GetDeviceDataResponse;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequest;
 import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed;
 import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
-import com.guardion.app.demo.dto.mqtt.MqttTestRequestDetailed2;
+import com.guardion.app.demo.dto.mqtt.SensorData;
 import com.guardion.app.demo.eunms.DeviceState;
 import com.guardion.app.demo.eunms.DoorStatus;
 import com.guardion.app.demo.repository.DeviceRepository;
@@ -49,7 +49,7 @@ public class DeviceDataConverter {
 				.build();
 	}
 
-	public DeviceData mqttTestRequestDetailed2ToDeviceData(MqttTestRequestDetailed2 dto) {
+	public DeviceData sensorDataToDeviceData(SensorData dto) {
 		Device device = deviceRepository.findBySerialNumber(dto.getContainer())
 				.orElseThrow(() -> new RuntimeException("Device not found"));
 
