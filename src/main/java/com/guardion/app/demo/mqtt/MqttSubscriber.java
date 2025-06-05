@@ -55,7 +55,7 @@ public class MqttSubscriber implements MqttCallback {
 			client.connect(options);
 
 			// 와일드카드 구독
-			client.subscribe("containers/+/metrics");
+			client.subscribe("devices/batsafety/data");
 
 		} catch (MqttException e) {
 			e.printStackTrace();
@@ -68,6 +68,7 @@ public class MqttSubscriber implements MqttCallback {
 	}
 
 	@Override
+	@Transactional
 	public void messageArrived(String topic, MqttMessage message) {
 		boolean shouldAlert = false;
 		System.out.println("Received message:");
@@ -106,7 +107,9 @@ public class MqttSubscriber implements MqttCallback {
 			Alert alert = Alert.builder()
 				.user(user)
 				.device(entity.getDevice())
+				.alertType(entity.getState().toString())
 				.deviceData(entity)
+				.message("Device state changed to " + entity.getState().toString())
 				.build();
 
 			//알림 dto 로 변경
@@ -115,8 +118,14 @@ public class MqttSubscriber implements MqttCallback {
 				.build();
 
 			sseController.sendAlertToClients(data);
-			alertRepository.save(alert);
-			// System.out.println("Alert saved to repository: " + alert.getId());
+			System.out.println("Alert sent to SSE clients: " + data.getDeviceState());
+			try {
+				alertRepository.save(alert);
+				System.out.println("Alert saved to repository: " + alert.getId());
+			} catch (Exception e) {
+				System.out.println("Failed to save alert: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 

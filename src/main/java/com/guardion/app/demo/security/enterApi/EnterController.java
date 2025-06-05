@@ -38,10 +38,10 @@ public class EnterController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<Void>> login(@RequestBody @Valid LoginRequest request) {
+	public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequest request) {
 		String token = enterService.login(request);
 		return ResponseEntity.ok()
 			.header("Authorization", "Bearer " + token)
-			.body(ApiResponse.successWithNoData());
+			.body(Map.of("message", "Login successful", "token", token));
 	}
 }

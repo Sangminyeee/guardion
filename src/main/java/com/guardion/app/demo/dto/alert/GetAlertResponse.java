@@ -11,5 +11,5 @@ public class GetAlertResponse {
 
 	private String deviceSerialNumber;
 	private LocalDateTime alertTime;
-	private String alertType;
+	private String message;
 }

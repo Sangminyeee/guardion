@@ -18,7 +18,7 @@ public class AlertConverter {
 	public List<GetAlertResponse> alertsToGetAllAlertResponse(List<Alert> alerts) {
 		List<GetAlertResponse> list = new ArrayList<>();
 		for (Alert alert : alerts) {
-			list.add(new GetAlertResponse(alert.getDevice().getSerialNumber(), alert.getCreatedAt(), alert.getAlertType().toString()));
+			list.add(new GetAlertResponse(alert.getDevice().getSerialNumber(), alert.getCreatedAt(), alert.getMessage()));
 		}
 		return list;
 	}
