@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'login_page.dart';
+import 'service/api_service.dart';
+
 class HousingDetail {
   final String serialNumber;
   HousingDetail({required this.serialNumber});
   factory HousingDetail.fromJson(Map<String, dynamic> json) {
-    return HousingDetail(
-      serialNumber: json['serialNumber'] ?? '',
-    );
+    return HousingDetail(serialNumber: json['serialNumber'] ?? '');
   }
 }
 
 // 시리얼넘버로 GET 조회
 Future<HousingDetail?> fetchHousingDetail(String serialNumber) async {
-  final url = Uri.parse(
-    'http://3.39.253.151:8080/device/$serialNumber',
-  );
+  final url = Uri.parse('http://3.39.253.151:8080/device/$serialNumber');
 
   if (globalToken == null) {
     print('토큰이 없습니다. 로그인부터 하세요!');
@@ -28,9 +26,7 @@ Future<HousingDetail?> fetchHousingDetail(String serialNumber) async {
 
   final response = await http.get(
     url,
-    headers: {
-      'Authorization': globalToken!,
-    },
+    headers: {'Authorization': globalToken!},
   );
 
   print('[API RESPONSE] statusCode: ${response.statusCode}');
@@ -73,9 +69,31 @@ class _AddHousingPageState extends State<AddHousingPage> {
     if (isValid) {
       Navigator.pushNamed(context, '/verify');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('존재하지 않는 시리얼넘버입니다')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('존재하지 않는 시리얼넘버입니다')));
+    }
+  }
+
+  void _onRegisterPressed() async {
+    final serial = _controller.text.trim();
+    if (serial.isEmpty) return;
+    setState(() => _isLoading = true);
+    try {
+      await ApiService.registerDevice({
+        'serialNumber': serial,
+        'location': '', // 위치 입력값이 있다면 여기에 추가
+      });
+      _controller.clear();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('등록 성공!')));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('등록 실패: $e')));
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -170,11 +188,12 @@ class _AddHousingPageState extends State<AddHousingPage> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: _isLoading ? null : _onConfirmPressed,
-                child: _isLoading
+                onPressed: _isLoading ? null : _onRegisterPressed,
+                child:
+                _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
-                  '확인',
+                  '등록',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
