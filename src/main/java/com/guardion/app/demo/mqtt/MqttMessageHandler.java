@@ -24,42 +24,6 @@ public class MqttMessageHandler {
 	private final DeviceDataConverter deviceDataConverter;
 	private final SseController sseController;
 
-	// public void messageArrived(String topic, MqttMessage message) {
-	// 	String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-	// 	System.out.println("Received: " + payload);
-	//
-	// 	// 예: JSON 형식일 경우 처리
-	// 	ObjectMapper objectMapper = new ObjectMapper();
-	// 	try {
-	// 		MqttTestRequest dto = objectMapper.readValue(payload, MqttTestRequest.class);
-	// 		// DeviceData entity = dto.toEntity();
-	// 		DeviceData entity = deviceDataConverter.mqttTestRequestToDeviceData(dto);
-	// 		deviceDataRepository.save(entity);
-	// 	} catch (Exception e) {
-	// 		e.printStackTrace();
-	// 	}
-	// }
-
-	// @Transactional
-	// public void messageArrived(String topic, MqttMessage message) {
-	// 	String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-	// 	System.out.println("Received: " + message);
-	//
-	// 	// 예: JSON 형식일 경우 처리
-	// 	ObjectMapper objectMapper = new ObjectMapper();
-	// 	MqttTestRequestDetailed mqttData = null;
-	// 	try {
-	// 		mqttData = objectMapper.readValue(payload, MqttTestRequestDetailed.class);
-	// 		// DeviceData entity = dto.toEntity();
-	// 		DeviceData entity = deviceDataConverter.mqttTestRequestDetailedToDeviceData(mqttData);
-	// 		deviceDataRepository.save(entity);
-	// 	} catch (Exception e) {
-	// 		e.printStackTrace();
-	// 	}
-	//
-	// 	sseController.sendSensorDataToClients(mqttData);
-	// }
-
 	@Transactional
 	public void messageArrived(String topic, MqttMessage message) {
 		String payload = new String(message.getPayload(), StandardCharsets.UTF_8);

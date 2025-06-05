@@ -55,7 +55,7 @@ public class MqttSubscriber implements MqttCallback {
 			client.connect(options);
 
 			// 와일드카드 구독
-			client.subscribe("devices/batsafety/data");
+			client.subscribe("devices/+/data");
 
 		} catch (MqttException e) {
 			e.printStackTrace();

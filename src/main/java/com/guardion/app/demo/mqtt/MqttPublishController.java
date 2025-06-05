@@ -20,7 +20,7 @@ public class MqttPublishController {
 
 	@PostMapping("/device")
 	public ResponseEntity<ApiResponse<String>> sendMqtt(@RequestBody MqttTestSend request) throws Exception {
-		String topic = "devices/batsafety/control";
+		String topic = "devices/" + request.getDeviceId() + "/control";
 		String payload = objectMapper.writeValueAsString(request);
 
 		mqttPublisher.publish(topic, payload);
