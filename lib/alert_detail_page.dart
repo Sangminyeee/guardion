@@ -75,69 +75,140 @@ Future<DeviceTempHumidityData?> fetchTempHumidity({
   }
 }
 
-// 3. AlertDetailPage 구현
-class AlertDetailPage extends StatelessWidget {
-  final String notificationId;
-  const AlertDetailPage({super.key, required this.notificationId});
+// AlertDetail 모델 클래스 추가
+class AlertDetail {
+  final String deviceSerialNumber;
+  final String alertTime;
+  final String alertType;
+  final String alertMessage;
+
+  AlertDetail({
+    required this.deviceSerialNumber,
+    required this.alertTime,
+    required this.alertType,
+    required this.alertMessage,
+  });
+
+  factory AlertDetail.fromJson(Map<String, dynamic> json) {
+    return AlertDetail(
+      deviceSerialNumber: json['deviceSerialNumber'] ?? '',
+      alertTime: json['alertTime'] ?? '',
+      alertType: json['alertType'] ?? '',
+      alertMessage: json['alertMessage'] ?? '',
+    );
+  }
+}
+
+class AlertDetailPage extends StatefulWidget {
+  final int alertId;
+  const AlertDetailPage({super.key, required this.alertId});
+
+  @override
+  State<AlertDetailPage> createState() => _AlertDetailPageState();
+}
+
+class _AlertDetailPageState extends State<AlertDetailPage> {
+  AlertDetail? alertDetail;
+  bool isLoading = true;
+  String? errorMsg;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAlertDetail();
+  }
+
+  Future<void> _fetchAlertDetail() async {
+    try {
+      final storage = const FlutterSecureStorage();
+      final token = await storage.read(key: 'jwt_token');
+      if (token == null) {
+        setState(() {
+          errorMsg = '로그인 토큰이 없습니다.';
+          isLoading = false;
+        });
+        return;
+      }
+      final url = Uri.parse('http://3.39.253.151:8080/alert/${widget.alertId}');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        if (jsonBody['success'] == true && jsonBody['data'] != null) {
+          setState(() {
+            alertDetail = AlertDetail.fromJson(jsonBody['data']);
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            errorMsg = '데이터가 없습니다.';
+            isLoading = false;
+          });
+        }
+      } else {
+        setState(() {
+          errorMsg = '서버 오류: ${response.statusCode}';
+          isLoading = false;
+        });
+        print('❌ 서버 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        errorMsg = '예외 발생: $e';
+        isLoading = false;
+      });
+      print('❌ 예외 발생: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final String nid =
-        args != null ? args['alert']['id'].toString() : notificationId;
     return Scaffold(
       appBar: AppBar(title: const Text('알림 상세')),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: ApiService.fetchNotificationDetail(nid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '데이터를 불러올 수 없습니다.\n${snapshot.error}',
-                textAlign: TextAlign.center,
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMsg != null
+              ? Center(child: Text(errorMsg!, textAlign: TextAlign.center))
+              : alertDetail == null
+              ? const Center(child: Text('데이터가 없습니다.'))
+              : ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  _dataRow('시리얼넘버', alertDetail!.deviceSerialNumber),
+                  _dataRow('알림 시각', alertDetail!.alertTime),
+                  _dataRow('알림 종류', alertDetail!.alertType),
+                  _dataRow('알림 메시지', alertDetail!.alertMessage),
+                ],
               ),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('데이터가 없습니다.'));
-          }
-          final data = snapshot.data!;
-          return ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              ...data.keys.map(
-                (k) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Row(
-                    children: [
-                      Text(
-                        k,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const Spacer(),
-                      Flexible(
-                        child: Text(
-                          data[k]?.toString() ?? '-',
-                          style: const TextStyle(fontSize: 16),
-                          textAlign: TextAlign.right,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+    );
+  }
+
+  Widget _dataRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const Spacer(),
+          Flexible(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.right,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -154,7 +225,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Alert Detail Demo',
-      home: const AlertDetailPage(notificationId: 'AX0132F'), // 테스트용 알림 ID
+      home: const AlertDetailPage(alertId: 1), // 테스트용 알림 ID
     );
   }
 }
