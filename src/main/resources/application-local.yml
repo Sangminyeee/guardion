@@ -53,6 +53,6 @@ springdoc:
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true
     doc-expansion: none
-  paths-to-match:
+  paths-to-match: #..
 
 
