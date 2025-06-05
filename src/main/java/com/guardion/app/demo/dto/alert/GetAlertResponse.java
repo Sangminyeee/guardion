@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetAlertResponse {
 
+	private Long alertId;
 	private String deviceSerialNumber;
 	private LocalDateTime alertTime;
 	private String message;
