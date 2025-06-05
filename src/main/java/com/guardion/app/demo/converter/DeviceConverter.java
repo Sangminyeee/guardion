@@ -34,7 +34,7 @@ public class DeviceConverter {
 	public List<GetUsersAllDeviceResponse> devicesToGetUsersAllDeviceResponse(List<Device> devices) {
 		List<GetUsersAllDeviceResponse> list = new ArrayList<>();
 		for (Device device : devices) {
-			list.add(new GetUsersAllDeviceResponse(device.getSerialNumber(), device.getDeviceName()));
+			list.add(new GetUsersAllDeviceResponse(device.getSerialNumber()));
 		}
 		return list;
 	}

@@ -15,8 +15,11 @@ import com.guardion.app.demo.exception.responseDto.ApiResponse;
 import com.guardion.app.demo.security.CustomUserDetails;
 import com.guardion.app.demo.service.alert.AlertService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "알림 API", description = "알림 조회 API")
 @RestController
 @RequestMapping("/alert")
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class AlertController {
 	private final AlertService alertService;
 
 	//홈화면 알림 목록 조회(모든 함체에 대한 알림)
+	@Operation(summary = "사용자의 모든 함체 알림 조회 API", description = "홈화면에 간략히 표시용")
 	@GetMapping("/all")
 	public ResponseEntity<ApiResponse<List<GetAlertResponse>>> getAllAlert(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -34,6 +38,7 @@ public class AlertController {
 	}
 
 	//개별 알림 상세 조회
+	@Operation(summary = "함체 알림 상세 조회 API", description = "홈화면의 알림 클릭 시")
 	@GetMapping("/{alertId}")
 	public ResponseEntity<ApiResponse<GetAlertResponseDetailed>> getAlertDetail(@PathVariable Long alertId) {
 		GetAlertResponseDetailed response = alertService.getAlertDetail(alertId);

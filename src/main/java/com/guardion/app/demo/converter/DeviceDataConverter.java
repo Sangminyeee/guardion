@@ -66,7 +66,8 @@ public class DeviceDataConverter {
 	}
 
 	public GetTemperatureHumidityResponse deviceDataToGetTemperatureHumidityResponse(DeviceData deviceData) {
-		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity());
+		return new GetTemperatureHumidityResponse(deviceData.getInternalTemperature(), deviceData.getInternalHumidity(),
+			deviceData.getTemperatureDiff(), deviceData.getHumidityDiff());
 	}
 
 	public GetDeviceDataResponse deviceDataToGetDeviceDataResponse(DeviceData deviceData) {

@@ -98,24 +98,25 @@ public class MqttSubscriber implements MqttCallback {
 		sseController.sendSensorDataToClients(mqttData);
 		System.out.println("After sse controller");
 
-		User user = entity.getDevice().getUser();
-		System.out.println("userId: " + user.getUsername());
+		// User user = entity.getDevice().getUser();
+		// System.out.println("userId: " + user.getUsername());
 
 		if(shouldAlert) {
 			System.out.println("Sending alert for device: " + entity.getDevice().getId());
 
 			Alert alert = Alert.builder()
-				.user(user)
+				.user(entity.getDevice().getUser())
 				.device(entity.getDevice())
 				.alertType(entity.getState().toString())
 				.deviceData(entity)
 				.message("Device state changed to " + entity.getState().toString())
 				.build();
 
-			//알림 dto 로 변경
+			//sse 송신용 dto 로 변경
 			SseSendAlert data = SseSendAlert.builder()
 				.deviceState(entity.getState().toString())
 				.deviceSerialNumber(entity.getDevice().getSerialNumber())
+				.alertTime(entity.getCreatedAt())
 				.build();
 
 			sseController.sendAlertToClients(data);

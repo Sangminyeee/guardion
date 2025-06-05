@@ -18,9 +18,12 @@ import com.guardion.app.demo.exception.responseDto.ApiResponse;
 import com.guardion.app.demo.security.CustomUserDetails;
 import com.guardion.app.demo.service.device.DeviceService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "함체 API", description = "함체 등록 및 조회 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/device")
@@ -29,6 +32,7 @@ public class DeviceController {
 	private final DeviceService deviceService;
 
 	//함체 등록
+	@Operation(summary = "함체 등록 API", description = "함체 등록 페이지용")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> registerDevice(
 		@RequestBody @Valid RegisterDeviceRequest request,
@@ -40,6 +44,7 @@ public class DeviceController {
 	}
 
 	//사용자의 모든 함체 조회
+	@Operation(summary = "특정 사용자의 모든 함체 조회 API", description = "홈화면의 온도, 습도 위에 표시용")
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<GetUsersAllDeviceResponse>>> getUsersAllDevice(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -50,6 +55,7 @@ public class DeviceController {
 	}
 
 	//개별 함체 정보 조회
+	@Operation(summary = "함체 정보 상세 조회 API", description = "지금은 필요 없는 것 같습니다.")
 	@GetMapping("{serialNumber}")
 	public ResponseEntity<ApiResponse<GetDeviceInfoResponse>> getDeviceInfo(
 		@PathVariable String serialNumber,

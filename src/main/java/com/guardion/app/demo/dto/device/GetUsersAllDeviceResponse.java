@@ -9,5 +9,5 @@ import lombok.RequiredArgsConstructor;
 public class GetUsersAllDeviceResponse {
 
 	private String serialNumber;
-	private String deviceName;
+	// private String deviceName;
 }
