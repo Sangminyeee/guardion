@@ -83,7 +83,7 @@ public class MqttSubscriber implements MqttCallback {
 		try {
 			mqttData = objectMapper.readValue(payload, SensorData.class);
 		} catch (Exception e) {
-			System.out.println("Error processing MQTT message: " + e.getMessage());
+			System.out.println("Error processing MQTT message : " + e.getMessage());
 			e.printStackTrace();
 		}
 
