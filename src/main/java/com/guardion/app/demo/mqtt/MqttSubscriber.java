@@ -115,6 +115,7 @@ public class MqttSubscriber implements MqttCallback {
 			//알림 dto 로 변경
 			SseSendAlert data = SseSendAlert.builder()
 				.deviceState(entity.getState().toString())
+				.deviceSerialNumber(entity.getDevice().getSerialNumber())
 				.build();
 
 			sseController.sendAlertToClients(data);

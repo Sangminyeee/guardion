@@ -20,7 +20,7 @@ public class SseController {
 	// 클라이언트별로 emitter 저장
 	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
-	@GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@GetMapping(value = "/data-alert", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe() {
 		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 연결 지속 시간
 		emitters.add(emitter);

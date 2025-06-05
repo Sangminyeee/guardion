@@ -9,5 +9,6 @@ import lombok.Getter;
 @Builder
 public class SseSendAlert {
 
+	private String deviceSerialNumber;
 	private String deviceState;
 }
