@@ -194,201 +194,203 @@ class _HomePageState extends State<HomePage> {
         centerTitle: false,
       ),
       backgroundColor: const Color(0xFFF7F7F7),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 32),
-            const Text(
-              '함체 대시보드',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF00A9E0),
-              ),
-            ),
-            const SizedBox(height: 24),
-            DropdownButton<String>(
-              value: selectedSerial,
-              items:
-                  housingList
-                      .map(
-                        (housing) => DropdownMenuItem(
-                          value: housing['serialNumber']?.toString(),
-                          child: Text(
-                            '${housing['serialNumber'] ?? ''} (${housing['deviceName'] ?? '이름없음'})',
-                          ),
-                        ),
-                      )
-                      .toList(),
-              onChanged:
-                  (housingList.isEmpty)
-                      ? null
-                      : (value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedSerial = value;
-                          });
-                          _loadAll(value);
-                        }
-                      },
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Color(0xFF00A9E0), width: 2),
-                ),
-                onPressed:
-                    (selectedSerial == null)
-                        ? null
-                        : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => HousingDetailPage(
-                                    serialNumber: selectedSerial!,
-                                  ),
-                            ),
-                          );
-                        },
-                child: const Text(
-                  '함체 데이터 상세보기',
-                  style: TextStyle(
-                    color: Color(0xFF00A9E0),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            if (housingList.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  '등록된 함체가 없습니다. 우측 하단 + 버튼으로 함체를 등록해 주세요.',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            if (housingList.isNotEmpty) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: Card(
-                      child: Column(
-                        children: [
-                          const Text('온도'),
-                          isLoadingTempHumidity
-                              ? const CircularProgressIndicator()
-                              : Text(
-                                tempHumidityData != null
-                                    ? '${tempHumidityData!.temperature}°C'
-                                    : '-',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                              ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Card(
-                      child: Column(
-                        children: [
-                          const Text('습도'),
-                          isLoadingTempHumidity
-                              ? const CircularProgressIndicator()
-                              : Text(
-                                tempHumidityData != null
-                                    ? '${tempHumidityData!.humidity}%'
-                                    : '-',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF00A9E0),
-                                ),
-                              ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               const SizedBox(height: 32),
               const Text(
-                '알림센터',
+                '함체 대시보드',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF00A9E0),
                 ),
               ),
-              const SizedBox(height: 12),
-              if (alerts.isEmpty)
-                const Text('알림이 없습니다.', style: TextStyle(color: Colors.grey)),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: isLoadingAlerts ? 0 : alerts.length,
-                separatorBuilder: (context, idx) => const SizedBox(height: 8),
-                itemBuilder: (context, idx) {
-                  final alert = alerts[idx];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/alertDetail',
-                        arguments: {
-                          'alert': alert,
-                          'serialNumber': selectedSerial,
+              const SizedBox(height: 24),
+              DropdownButton<String>(
+                value: selectedSerial,
+                items:
+                    housingList
+                        .map(
+                          (housing) => DropdownMenuItem(
+                            value: housing['serialNumber']?.toString(),
+                            child: Text(
+                              '${housing['serialNumber'] ?? ''} (${housing['deviceName'] ?? '이름없음'})',
+                            ),
+                          ),
+                        )
+                        .toList(),
+                onChanged:
+                    (housingList.isEmpty)
+                        ? null
+                        : (value) {
+                          if (value != null) {
+                            setState(() {
+                              selectedSerial = value;
+                            });
+                            _loadAll(value);
+                          }
                         },
-                      );
-                    },
-                    child: Card(
-                      color:
-                          alert['msg']?.toString().contains('정상') == true
-                              ? const Color(0xFFE6F7FD)
-                              : const Color(0xFFFFD6D6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
-                        ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: Color(0xFF00A9E0), width: 2),
+                  ),
+                  onPressed:
+                      (selectedSerial == null)
+                          ? null
+                          : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => HousingDetailPage(
+                                      serialNumber: selectedSerial!,
+                                    ),
+                              ),
+                            );
+                          },
+                  child: const Text(
+                    '함체 데이터 상세보기',
+                    style: TextStyle(
+                      color: Color(0xFF00A9E0),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              if (housingList.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    '등록된 함체가 없습니다. 우측 하단 + 버튼으로 함체를 등록해 주세요.',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (housingList.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Card(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ...alert.keys
-                                .map((k) => Text('$k: ${alert[k]}'))
-                                .toList(),
+                            const Text('온도'),
+                            isLoadingTempHumidity
+                                ? const CircularProgressIndicator()
+                                : Text(
+                                  tempHumidityData != null
+                                      ? '${tempHumidityData!.temperature}°C'
+                                      : '-',
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
                           ],
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                    Expanded(
+                      child: Card(
+                        child: Column(
+                          children: [
+                            const Text('습도'),
+                            isLoadingTempHumidity
+                                ? const CircularProgressIndicator()
+                                : Text(
+                                  tempHumidityData != null
+                                      ? '${tempHumidityData!.humidity}%'
+                                      : '-',
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF00A9E0),
+                                  ),
+                                ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                const Text(
+                  '알림센터',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00A9E0),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (alerts.isEmpty)
+                  const Text('알림이 없습니다.', style: TextStyle(color: Colors.grey)),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: isLoadingAlerts ? 0 : alerts.length,
+                  separatorBuilder: (context, idx) => const SizedBox(height: 8),
+                  itemBuilder: (context, idx) {
+                    final alert = alerts[idx];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/alertDetail',
+                          arguments: {
+                            'alert': alert,
+                            'serialNumber': selectedSerial,
+                          },
+                        );
+                      },
+                      child: Card(
+                        color:
+                            alert['msg']?.toString().contains('정상') == true
+                                ? const Color(0xFFE6F7FD)
+                                : const Color(0xFFFFD6D6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...alert.keys
+                                  .map((k) => Text('$k: ${alert[k]}'))
+                                  .toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
