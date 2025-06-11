@@ -22,7 +22,7 @@ logging:
     org.springframework.security: DEBUG
 
 jwt:
-  secret: "yoursecretkeyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+  secret: yoursecretkeyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 
 mqtt:
   broker: tcp://ec2-3-39-253-151.ap-northeast-2.compute.amazonaws.com:1883 #tcp://localhost:1883
