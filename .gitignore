@@ -1,0 +1,11 @@
+# Flutter 빌드 및 IDE 환경 파일 무시
+build/
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+android/.gradle/
+android/
+ios/Pods/
+*.iml
