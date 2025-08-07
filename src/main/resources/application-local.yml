@@ -26,9 +26,9 @@ jwt:
 
 mqtt:
   broker: tcp://ec2-3-39-253-151.ap-northeast-2.compute.amazonaws.com:1883 #tcp://localhost:1883
-  client-id: guardion-sub #서버가 test/topic을 구독하면서 메시지를 받을 때 guardion-sub이라는 ID로 연결함.
-  sub-topic: test/topic #테스트용 구독 토픽
-  publisher-id: guardion-pub #서버가 특정 topic으로 메시지를 publish할 때, guardion-pub이라는 ID로 연결함.
+  client-id: guardion-sub-l #guardion-sub
+  sub-topic: test/topic/l #테스트용 구독 토픽
+  publisher-id: guardion-pub-l #guardion-pub
 
 cors:
   allowed-origin : http://localhost:3000

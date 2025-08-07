@@ -18,7 +18,6 @@ import com.guardion.app.demo.dto.alert.SseSendAlert;
 import com.guardion.app.demo.dto.mqtt.SensorData;
 import com.guardion.app.demo.repository.AlertRepository;
 import com.guardion.app.demo.repository.DeviceDataRepository;
-import com.guardion.app.demo.repository.DeviceRepository;
 import com.guardion.app.demo.sse.SseController;
 
 import jakarta.annotation.PostConstruct;
@@ -36,17 +35,17 @@ public class MqttSubscriber implements MqttCallback {
 	private final SseConverter sseConverter;
 
 	@Value("${mqtt.broker}")
-	private String BROKER; // MQTT 브로커 주소
+	private String broker; // MQTT 브로커 주소
 
 	@Value("${mqtt.client-id}")
-	private String CLIENT_ID;
+	private String clientId;
 
 	private MqttClient client;
 
 	@PostConstruct
 	public void subscribe() {
 		try {
-			client = new MqttClient(BROKER, CLIENT_ID, new MemoryPersistence());
+			client = new MqttClient(broker, clientId, new MemoryPersistence());
 			MqttConnectOptions options = new MqttConnectOptions();
 			options.setCleanSession(true);
 			client.setCallback(this);
@@ -95,16 +94,16 @@ public class MqttSubscriber implements MqttCallback {
 		}
 
 		sseController.sendSensorDataToClients(mqttData);
-		// System.out.println("Sensor data sent to SSE clients : " + mqttData.getContainer());
+		System.out.println("Sensor data sent to SSE clients : " + mqttData.getContainer());
 
 		if(shouldAlert) {
-			// System.out.println("Sending alert for device: " + deviceData.getDevice().getId());
+			System.out.println("Sending alert for device: " + deviceData.getDevice().getId());
 			Alert alert = alertConverter.deviceDataToAlert(deviceData);
 			alertRepository.save(alert);
 			//sse 송신용 dto 로 변경
 			SseSendAlert data = sseConverter.deviceDataToSseSendAlert(deviceData);
 			sseController.sendAlertToClients(data);
-			// System.out.println("Alert sent to SSE clients: " + alert.getId());
+			System.out.println("Alert sent to SSE clients: " + alert.getId());
 		}
 	}
 

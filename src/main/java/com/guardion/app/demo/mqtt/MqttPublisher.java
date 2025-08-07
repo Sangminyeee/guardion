@@ -15,7 +15,7 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class MqttPublisher {
 
-	private IMqttClient mqttClient;
+	private MqttClient client;
 
 	@Value("${mqtt.broker}")
 	private String broker;
@@ -26,8 +26,8 @@ public class MqttPublisher {
 	@PostConstruct
 	public void init() {
 		try {
-			mqttClient = new MqttClient(broker, publisherId);
-			mqttClient.connect();
+			client = new MqttClient(broker, publisherId);
+			client.connect();
 		} catch (MqttException e) {
 			throw new BusinessException(ErrorCode.MQTT_CONNECTION_ERROR);
 		}
@@ -35,14 +35,14 @@ public class MqttPublisher {
 
 	public void publish(String topic, String payload) {
 		try {
-			if (!mqttClient.isConnected()) {
-				mqttClient.connect();
+			if (!client.isConnected()) {
+				client.connect();
 			}
 
 			MqttMessage message = new MqttMessage();
 			message.setPayload(payload.getBytes());
 			message.setQos(1); // QoS 0, 1, or 2
-			mqttClient.publish(topic, message);
+			client.publish(topic, message);
 		} catch (MqttException e) {
 			throw new BusinessException(ErrorCode.MQTT_PUBLISH_ERROR);
 		}
