@@ -15,7 +15,9 @@ import com.guardion.app.demo.eunms.DoorStatus;
 import com.guardion.app.demo.repository.DeviceRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DeviceDataConverter {
@@ -24,45 +26,60 @@ public class DeviceDataConverter {
 	DeviceRepository deviceRepository;
 
 	public DeviceData mqttTestRequestToDeviceData(MqttTestRequest dto) {
-		Device device = deviceRepository.findById(dto.getDeviceId())
+		try {
+			Device device = deviceRepository.findById(dto.getDeviceId())
 				.orElseThrow(() -> new RuntimeException("Device not found"));
 
-		return DeviceData.builder()
-				.device(device)
-				.internalHumidity(dto.getMessage())
-				.build();
+			return DeviceData.builder()
+					.device(device)
+					.internalHumidity(dto.getMessage())
+					.build();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
 	}
 
 	public DeviceData mqttTestRequestDetailedToDeviceData(MqttTestRequestDetailed dto) {
-		Device device = deviceRepository.findById(dto.getDeviceId())
+		try {
+			Device device = deviceRepository.findById(dto.getDeviceId())
 				.orElseThrow(() -> new RuntimeException("Device not found"));
 
-		//남은 데이터 device 에 저장(미완)
-		return DeviceData.builder()
-				.device(device)
-				.internalTemperature(dto.getTemperature())
-				.internalHumidity(dto.getHumidity())
-				.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
-				.batteryExists(dto.isBattery())
-				.beepStatus(dto.isBeep())
-				.lightStatus(dto.isLight())
-				.build();
+			//남은 데이터 device 에 저장
+			return DeviceData.builder()
+					.device(device)
+					.internalTemperature(dto.getTemperature())
+					.internalHumidity(dto.getHumidity())
+					.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
+					.batteryExists(dto.isBattery())
+					.beepStatus(dto.isBeep())
+					.lightStatus(dto.isLight())
+					.build();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
 	}
 
 	public DeviceData sensorDataToDeviceData(SensorData dto) {
-		Device device = deviceRepository.findBySerialNumber(dto.getContainer())
+		try {
+			Device device = deviceRepository.findBySerialNumber(dto.getContainer())
 				.orElseThrow(() -> new RuntimeException("Device not found"));
 
-		return DeviceData.builder()
-				.device(device)
-				.internalTemperature(dto.getTemp())
-				.internalHumidity(dto.getHum())
-				.temperatureDiff(dto.getTempDiff())
-				.humidityDiff(dto.getHumDiff())
-				.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
-				.batteryExists(dto.isBattery())
-				.state(DeviceState.valueOf(dto.getState().toUpperCase()))
-				.build();
+			return DeviceData.builder()
+					.device(device)
+					.internalTemperature(dto.getTemp())
+					.internalHumidity(dto.getHum())
+					.temperatureDiff(dto.getTempDiff())
+					.humidityDiff(dto.getHumDiff())
+					.doorStatus(DoorStatus.valueOf(dto.getDoor().toUpperCase()))
+					.batteryExists(dto.isBattery())
+					.state(DeviceState.valueOf(dto.getState().toUpperCase()))
+					.build();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
 	}
 
 	public GetTemperatureHumidityResponse deviceDataToGetTemperatureHumidityResponse(DeviceData deviceData) {
