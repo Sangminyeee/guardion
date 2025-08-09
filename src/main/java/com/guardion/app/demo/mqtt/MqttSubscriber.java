@@ -25,6 +25,7 @@ import com.guardion.app.demo.repository.DeviceDataRepository;
 import com.guardion.app.demo.sse.SseController;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -171,7 +172,7 @@ public class MqttSubscriber implements MqttCallbackExtended {
 		}
 	}
 
-	@jakarta.annotation.PreDestroy
+	@PreDestroy
 	public void shutdown() {
 		try {
 			if (client != null && client.isConnected()) {
