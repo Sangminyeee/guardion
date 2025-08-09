@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class MqttSubscriber implements MqttCallback {
+public class MqttSubscriber implements MqttCallbackExtended {
 
 	private final DeviceDataConverter deviceDataConverter;
 	private final DeviceDataRepository deviceDataRepository;
@@ -84,6 +84,12 @@ public class MqttSubscriber implements MqttCallback {
 		} catch (Exception e) {
 			System.out.println("Error processing MQTT message : " + e.getMessage());
 			e.printStackTrace();
+			return;
+		}
+
+		if (mqttData == null) {
+			System.out.println("Empty MQTT data after parsing");
+			return;
 		}
 
 		deviceData = deviceDataConverter.sensorDataToDeviceData(mqttData);
@@ -110,5 +116,10 @@ public class MqttSubscriber implements MqttCallback {
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		// Not used for subscriber
+	}
+
+	@Override
+	public void connectComplete(boolean b, String s) {
+
 	}
 }

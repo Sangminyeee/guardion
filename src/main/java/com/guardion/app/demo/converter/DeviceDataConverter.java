@@ -12,6 +12,8 @@ import com.guardion.app.demo.dto.deviceData.GetTemperatureHumidityResponse;
 import com.guardion.app.demo.dto.mqtt.SensorData;
 import com.guardion.app.demo.eunms.DeviceState;
 import com.guardion.app.demo.eunms.DoorStatus;
+import com.guardion.app.demo.exception.BusinessException;
+import com.guardion.app.demo.exception.code.ErrorCode;
 import com.guardion.app.demo.repository.DeviceRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class DeviceDataConverter {
 	public DeviceData mqttTestRequestToDeviceData(MqttTestRequest dto) {
 		try {
 			Device device = deviceRepository.findById(dto.getDeviceId())
-				.orElseThrow(() -> new RuntimeException("Device not found"));
+				.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
 
 			return DeviceData.builder()
 					.device(device)
@@ -43,7 +45,7 @@ public class DeviceDataConverter {
 	public DeviceData mqttTestRequestDetailedToDeviceData(MqttTestRequestDetailed dto) {
 		try {
 			Device device = deviceRepository.findById(dto.getDeviceId())
-				.orElseThrow(() -> new RuntimeException("Device not found"));
+				.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
 
 			//남은 데이터 device 에 저장
 			return DeviceData.builder()
@@ -64,7 +66,7 @@ public class DeviceDataConverter {
 	public DeviceData sensorDataToDeviceData(SensorData dto) {
 		try {
 			Device device = deviceRepository.findBySerialNumber(dto.getContainer())
-				.orElseThrow(() -> new RuntimeException("Device not found"));
+				.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
 
 			return DeviceData.builder()
 					.device(device)
