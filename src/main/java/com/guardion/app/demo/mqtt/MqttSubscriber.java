@@ -43,7 +43,8 @@ public class MqttSubscriber implements MqttCallbackExtended {
 	private String broker; // MQTT 브로커 주소
 
 	@Value("${mqtt.client-id}")
-	private String clientId;
+	private String clientIdBase;
+	private final String clientId = (clientIdBase != null ? clientIdBase : "") + "-" + java.util.UUID.randomUUID();
 
 	private MqttClient client;
 

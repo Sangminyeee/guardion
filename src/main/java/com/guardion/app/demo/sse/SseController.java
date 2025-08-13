@@ -59,7 +59,7 @@ public class SseController {
 
 	@PostConstruct
 	private void startHeartbeat() {
-		// 15초마다 모든 구독자에게 주석(comment) 이벤트 전송 -> 클라이언트 리스너를 방해하지 않음
+		// 300초마다 모든 구독자에게 주석(comment) 이벤트 전송 -> 클라이언트 리스너를 방해하지 않음
 		heartbeatScheduler.scheduleAtFixedRate(() -> {
 			for (SseEmitter emitter : emitters) {
 				try {
