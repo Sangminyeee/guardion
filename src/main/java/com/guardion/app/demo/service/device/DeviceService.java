@@ -9,6 +9,7 @@ import com.guardion.app.demo.converter.DeviceConverter;
 import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
 import com.guardion.app.demo.domain.User;
+import com.guardion.app.demo.dto.device.UpdateDeviceInfoRequest;
 import com.guardion.app.demo.dto.device.GetDeviceInfoResponse;
 import com.guardion.app.demo.dto.device.GetUsersAllDeviceResponse;
 import com.guardion.app.demo.dto.device.RegisterDeviceRequest;
@@ -18,6 +19,7 @@ import com.guardion.app.demo.repository.DeviceDataRepository;
 import com.guardion.app.demo.repository.DeviceRepository;
 import com.guardion.app.demo.repository.UserRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -67,7 +69,14 @@ public class DeviceService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
 
 		deviceRepository.delete(device);
+	}
 
+	@Transactional
+	public void updateDeviceInfo(Long userId, String serialNumber, @Valid UpdateDeviceInfoRequest request) {
+		Device device = deviceRepository.findByUserIdAndSerialNumber(userId, serialNumber)
+			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
+
+		if (request.getSerialNumber() != null) device.setSerialNumber(request.getSerialNumber());
 	}
 
 	@Transactional(readOnly = true)

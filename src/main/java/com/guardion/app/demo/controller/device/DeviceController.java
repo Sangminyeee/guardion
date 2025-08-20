@@ -6,12 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardion.app.demo.dto.device.UpdateDeviceInfoRequest;
 import com.guardion.app.demo.dto.device.GetDeviceInfoResponse;
 import com.guardion.app.demo.dto.device.GetUsersAllDeviceResponse;
 import com.guardion.app.demo.dto.device.RegisterDeviceRequest;
@@ -68,7 +71,7 @@ public class DeviceController {
 	}
 
 	//개별 함체 삭제
-	@Operation(summary = "함체 삭제 API", description = "함체 삭제 페이지용")
+	@Operation(summary = "함체 삭제 API", description = "함체 관리 페이지용")
 	@DeleteMapping("{serialNumber}")
 	public ResponseEntity<ApiResponse<Void>> deleteDevice(
 		@PathVariable String serialNumber,
@@ -80,6 +83,17 @@ public class DeviceController {
 	}
 
 	//개별 함체 정보 수정
+	@Operation(summary = "함체 정보 수정 API", description = "함체 관리 페이지용")
+	@PatchMapping("{serialNumber}")
+	public ResponseEntity<ApiResponse<Void>> updateDeviceInfo(
+		@PathVariable String serialNumber,
+		@RequestBody @Valid UpdateDeviceInfoRequest request,
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		deviceService.updateDeviceInfo(userId, serialNumber, request);
+		return ResponseEntity.ok(ApiResponse.successWithNoData());
+	}
 
 	//현재 함체 상태(단계) 조회 (간단히)
 	@Operation(summary = "함체 상태(단계) 조회 API", description = "홈화면 간단히 표시용")

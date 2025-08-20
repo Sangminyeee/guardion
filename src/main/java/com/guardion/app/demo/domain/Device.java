@@ -60,4 +60,9 @@ public class Device extends BaseEntity {
 
 	@Column(name = "data_last_recorded_at")
 	private LocalDateTime lastRecordedAt;
+
+	public void setSerialNumber(String newSerialNumber) {
+		if (newSerialNumber == null || newSerialNumber.isBlank()) throw new IllegalArgumentException();
+		this.serialNumber = newSerialNumber;
+	}
 }
