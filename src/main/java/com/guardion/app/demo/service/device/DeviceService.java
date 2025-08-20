@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.guardion.app.demo.converter.DeviceConverter;
 import com.guardion.app.demo.domain.Device;
+import com.guardion.app.demo.domain.DeviceData;
 import com.guardion.app.demo.domain.User;
 import com.guardion.app.demo.dto.device.GetDeviceInfoResponse;
 import com.guardion.app.demo.dto.device.GetUsersAllDeviceResponse;
 import com.guardion.app.demo.dto.device.RegisterDeviceRequest;
 import com.guardion.app.demo.exception.BusinessException;
 import com.guardion.app.demo.exception.code.ErrorCode;
+import com.guardion.app.demo.repository.DeviceDataRepository;
 import com.guardion.app.demo.repository.DeviceRepository;
 import com.guardion.app.demo.repository.UserRepository;
 
@@ -25,6 +27,7 @@ public class DeviceService {
 	private final DeviceRepository deviceRepository;
 	private final UserRepository userRepository;
 	private final DeviceConverter deviceConverter;
+	private final DeviceDataRepository deviceDataRepository;
 
 	@Transactional
 	public void registerDevice(RegisterDeviceRequest request, Long userId) {
@@ -58,4 +61,23 @@ public class DeviceService {
 		return deviceConverter.deviceToGetDeviceInfoResponse(device);
 	}
 
+	@Transactional
+	public void deleteDevice(Long userId, String serialNumber) {
+		Device device = deviceRepository.findByUserIdAndSerialNumber(userId, serialNumber)
+			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
+
+		deviceRepository.delete(device);
+
+	}
+
+	@Transactional(readOnly = true)
+	public String getDeviceStatus(Long userId, String serialNumber) {
+		Device device = deviceRepository.findByUserIdAndSerialNumber(userId, serialNumber)
+			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_NOT_FOUND));
+
+		DeviceData deviceData = deviceDataRepository.findTopByDeviceIdOrderByCreatedAtDesc(device.getId())
+			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_DATA_NOT_FOUND));
+
+		return deviceData.getState().toString();
+	}
 }

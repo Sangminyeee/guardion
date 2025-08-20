@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.guardion.app.demo.domain.Device;
 import com.guardion.app.demo.domain.DeviceData;
 
 @Repository

@@ -20,6 +20,9 @@ import com.guardion.app.demo.domain.Alert;
 import com.guardion.app.demo.domain.DeviceData;
 import com.guardion.app.demo.dto.alert.SseSendAlert;
 import com.guardion.app.demo.dto.mqtt.SensorData;
+import com.guardion.app.demo.eunms.DeviceState;
+import com.guardion.app.demo.exception.BusinessException;
+import com.guardion.app.demo.exception.code.ErrorCode;
 import com.guardion.app.demo.repository.AlertRepository;
 import com.guardion.app.demo.repository.DeviceDataRepository;
 import com.guardion.app.demo.sse.SseController;
@@ -138,6 +141,7 @@ public class MqttSubscriber implements MqttCallbackExtended {
 		ObjectMapper objectMapper = new ObjectMapper();
 		SensorData mqttData = null;
 		DeviceData deviceData = null;
+		String comment = null;
 
 		try {
 			mqttData = objectMapper.readValue(payload, SensorData.class);
@@ -153,10 +157,20 @@ public class MqttSubscriber implements MqttCallbackExtended {
 		}
 
 		deviceData = deviceDataConverter.sensorDataToDeviceData(mqttData);
-		deviceDataRepository.save(deviceData);
-		if(!deviceData.getState().toString().equals("NORMAL")) {
-			System.out.println("[MQTT] Alert condition met: " + deviceData.getState().toString());
+
+		DeviceState currentState = deviceData.getState();
+		DeviceData previousData = deviceDataRepository.findTopByDeviceIdOrderByCreatedAtDesc(deviceData.getDevice().getId())
+			.orElseThrow(() -> new BusinessException(ErrorCode.DEVICE_DATA_NOT_FOUND));
+		DeviceState previousState = previousData.getState();
+
+		if (previousState != null && currentState != null && currentState != previousState) {
 			shouldAlert = true;
+		}
+
+		deviceDataRepository.save(deviceData);
+		if(shouldAlert) {
+			comment = "Alert condition met: " + previousState.toString() + " -> " + currentState.toString();
+			System.out.println("[MQTT] " + comment);
 		}
 
 		sseController.sendSensorDataToClients(mqttData);
@@ -168,7 +182,7 @@ public class MqttSubscriber implements MqttCallbackExtended {
 			alertRepository.save(alert);
 			//sse 송신용 dto 로 변경
 			SseSendAlert data = sseConverter.deviceDataToSseSendAlert(deviceData);
-			sseController.sendAlertToClients(data);
+			sseController.sendAlertToClients(data, comment);
 			System.out.println("[MQTT] Alert sent to SSE clients: " + alert.getId());
 		}
 	}

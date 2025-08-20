@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,4 +66,31 @@ public class DeviceController {
 		GetDeviceInfoResponse response = deviceService.getDeviceInfo(userId, serialNumber);
 		return ResponseEntity.ok(ApiResponse.success(response));
 	}
+
+	//개별 함체 삭제
+	@Operation(summary = "함체 삭제 API", description = "함체 삭제 페이지용")
+	@DeleteMapping("{serialNumber}")
+	public ResponseEntity<ApiResponse<Void>> deleteDevice(
+		@PathVariable String serialNumber,
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		deviceService.deleteDevice(userId, serialNumber);
+		return ResponseEntity.ok(ApiResponse.successWithNoData());
+	}
+
+	//개별 함체 정보 수정
+
+	//현재 함체 상태(단계) 조회 (간단히)
+	@Operation(summary = "함체 상태(단계) 조회 API", description = "홈화면 간단히 표시용")
+	@GetMapping("{serialNumber}/status")
+	public ResponseEntity<ApiResponse<String>> getDeviceStatus(
+		@PathVariable String serialNumber,
+		@AuthenticationPrincipal CustomUserDetails customUserDetails
+	) {
+		Long userId = customUserDetails.getUserId();
+		String status = deviceService.getDeviceStatus(userId, serialNumber);
+		return ResponseEntity.ok(ApiResponse.success(status));
+	}
+
 }

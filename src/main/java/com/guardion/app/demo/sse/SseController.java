@@ -109,11 +109,12 @@ public class SseController {
 	}
 
 	// 알림 쏘기
-	public void sendAlertToClients(SseSendAlert data) {
+	public void sendAlertToClients(SseSendAlert data, String comment) {
 		for (SseEmitter emitter : emitters) {
 			try {
 				emitter.send(SseEmitter.event()
 					.name("alert-data")
+					.comment(comment)
 					.data(data));
 			} catch (Exception e) {
 				emitter.completeWithError(e);
