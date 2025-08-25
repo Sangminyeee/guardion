@@ -16,10 +16,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.guardion.app.demo.dto.alert.SseSendAlert;
 import com.guardion.app.demo.dto.mqtt.SensorData;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Tag(name = "SSE API", description = "무시해주세요!")
 @RestController
 @RequestMapping("/sse")
 public class SseController {

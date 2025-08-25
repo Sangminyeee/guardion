@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MqttTestSend {
+public class MqttControlRequest {
 
 	@JsonProperty("device_id")
 	private Long deviceId;

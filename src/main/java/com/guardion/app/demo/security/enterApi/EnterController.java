@@ -19,9 +19,12 @@ import com.guardion.app.demo.security.JwtProvider;
 import com.guardion.app.demo.security.dto.LoginRequest;
 import com.guardion.app.demo.security.dto.SignupRequest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
+@Tag(name = "회원가입 및 로그인 API")
 @RestController
 @AllArgsConstructor
 public class EnterController {
@@ -31,12 +34,14 @@ public class EnterController {
 	private final JwtProvider jwtProvider;
 	private final EnterService enterService;
 
+	@Operation(summary = "회원가입 API", description = "회원가입 시")
 	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<Void>> register(@RequestBody @Valid SignupRequest request) {
 		enterService.enter(request);
 		return ResponseEntity.ok(ApiResponse.successWithNoData());
 	}
 
+	@Operation(summary = "로그인 API", description = "로그인 시")
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<Void>> login(@RequestBody @Valid LoginRequest request) {
 		String token = enterService.login(request);
