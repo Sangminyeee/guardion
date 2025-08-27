@@ -55,4 +55,8 @@ springdoc:
     doc-expansion: none
   paths-to-match: #..
 
+mail:
+  from: "guardionapp@gmail.com"     # 발신 주소(SMTP에서 허용된 주소여야 함)
+  reset-base-url: "https://your-frontend/reset-password"  # 토큰이 붙는 프론트엔드 링크
+
 
