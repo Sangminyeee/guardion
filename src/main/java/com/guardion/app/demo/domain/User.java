@@ -35,6 +35,9 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private String password; // 여기에 bcrypt 해시를 저장
 
+	@Column(nullable = false, unique = true)
+	private String email;
+
 	@Column(name = "organization_name")
 	private String organization;
 

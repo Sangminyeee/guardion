@@ -1,16 +1,29 @@
 package com.guardion.app.demo.security.enterApi;
 
+import static java.time.LocalTime.*;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardion.app.demo.domain.PendingUser;
 import com.guardion.app.demo.domain.User;
+import com.guardion.app.demo.eunms.UserRole;
 import com.guardion.app.demo.exception.BusinessException;
 import com.guardion.app.demo.exception.code.ErrorCode;
+import com.guardion.app.demo.repository.PendingUserRepository;
 import com.guardion.app.demo.repository.UserRepository;
 import com.guardion.app.demo.security.JwtProvider;
 import com.guardion.app.demo.security.dto.LoginRequest;
-import com.guardion.app.demo.security.dto.SignupRequest;
+import com.guardion.app.demo.security.dto.SignupCodeRequest;
+import com.guardion.app.demo.security.dto.SignupVerifyRequest;
+import com.guardion.app.demo.security.findApi.MailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,14 +34,51 @@ public class EnterService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
+	private final PendingUserRepository pendingUserRepository;
+	private final MailService mailService;
 
 	@Transactional
-	public void enter(SignupRequest request) {
+	public String sendCode(SignupCodeRequest request) {
 		if (userRepository.existsByUsername(request.getUsername())) {
 			throw new BusinessException(ErrorCode.USERNAME_ALREADY_TAKEN);
+		} else if (userRepository.existsByEmail(request.getEmail())) {
+			throw new BusinessException(ErrorCode.EMAIL_ALREADY_TAKEN);
 		}
-		User user = request.toEntity(passwordEncoder.encode(request.getPassword()));
-		userRepository.save(user);
+
+		String code = generate6Digits();        // "031942"
+		String codeHash = sha256(code);
+		String pwdHash  = passwordEncoder.encode(request.getPassword());
+
+		pendingUserRepository.save(request.toPendingUser(pwdHash, codeHash));
+
+		mailService.sendOtpCode(request.getEmail(), "[Guardion] 회원가입 인증코드", "인증 코드: " + code + "\n유효시간: 10분");
+
+		return "인증코드가 이메일로 전송되었습니다.";
+	}
+
+	@Transactional
+	public String verifyCode(SignupVerifyRequest request) {
+		PendingUser p = pendingUserRepository.findByEmail(request.getEmail())
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND)); //변경필요
+		if (now().isAfter(p.getExpiresAt().toLocalTime())) throw new IllegalStateException("인증코드가 만료됨.");
+		if (p.getAttempts() >= 5) throw new IllegalStateException("인증코드 검증 시도 횟수 초과.");
+		if (!sha256(request.getCode()).equals(p.getCode())) {
+			p.setAttempts(p.getAttempts() + 1);
+			pendingUserRepository.save(p);
+			throw new IllegalArgumentException("인증코드 불일치.");
+		}
+
+		User u = User.builder()
+			.email(p.getEmail())
+			.username(p.getUsername())
+			.password(p.getPassword())
+			.role(UserRole.VIEWER)
+			.build();
+		userRepository.save(u);
+
+		pendingUserRepository.delete(p);
+
+		return "회원가입이 완료되었습니다.";
 	}
 
 	public String login(LoginRequest request) {
@@ -40,5 +90,19 @@ public class EnterService {
 		}
 
 		return jwtProvider.createToken(user.getUsername(), user.getRole().name());
+	}
+
+	private String generate6Digits() {
+		return String.format("%06d", new SecureRandom().nextInt(1_000_000));
+	}
+
+	private String sha256(String input) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+			return Base64.getEncoder().encodeToString(hash);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

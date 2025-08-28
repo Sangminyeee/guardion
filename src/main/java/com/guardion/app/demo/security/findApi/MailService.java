@@ -1,9 +1,12 @@
 package com.guardion.app.demo.security.findApi;
 
+import static java.awt.SystemColor.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -59,5 +62,18 @@ public class MailService {
 		} catch (MessagingException e) {
 			throw new RuntimeException("메일 전송 실패: " + e.getMessage(), e);
 		}
+	}
+
+	public void sendOtpCode(String to, String subject, String text) {
+
+		if (to == null || to.isBlank()) {
+			throw new IllegalArgumentException("이메일 주소가 누락되었음");
+		}
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+		message.setText(text);
+		mailSender.send(message);
 	}
 }
