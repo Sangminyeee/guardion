@@ -39,6 +39,9 @@ public class User extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private String email;
 
+	@Column(name = "token_version")
+	private int tokenVersion;
+
 	@Column(name = "organization_name")
 	private String organization;
 
@@ -52,5 +55,9 @@ public class User extends BaseEntity {
 
 	public void setPassword(String newPassword) {
 		this.password = newPassword;
+	}
+
+	public void setTokenVersion(int i) {
+		this.tokenVersion = i;
 	}
 }

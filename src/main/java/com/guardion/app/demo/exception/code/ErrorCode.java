@@ -38,7 +38,8 @@ public enum ErrorCode {
 	MQTT_PUBLISH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "MQTT 메시지 발행 오류입니다."),
 
 	//Token
-	INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, "T001", "유효하지 않은 비밀번호 재설정 토큰입니다.");
+	INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, "T001", "유효하지 않은 비밀번호 재설정 토큰입니다."),
+	INVALID_TOKEN_VERSION(HttpStatus.BAD_REQUEST, "T002", "유효하지 않은 토큰 버전입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

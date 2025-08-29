@@ -17,6 +17,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.guardion.app.demo.domain.PasswordResetToken;
 import com.guardion.app.demo.domain.User;
@@ -46,6 +47,7 @@ public class FindService {
 	@Value("${app.reset-token.ttl-minutes}")
 	private long ttlMinutes;
 
+	@Transactional
 	public String sendMailToUser(@Valid PasswordResetRequest request) {
 		User user = userRepository.findByUsernameAndEmail(request.getUsername(), request.getEmail())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -79,6 +81,7 @@ public class FindService {
 		return "메일이 성공적으로 전송되었습니다.";
 	}
 
+	@Transactional
 	public Map<String, Object> verifyResetToken(String plainToken, String userName) {
 		byte[] presentedHash = HashUtils.sha256(plainToken);
 		var t = tokenRepository.findByUserNameAndTokenHash(userName, presentedHash);
@@ -113,11 +116,13 @@ public class FindService {
 		return body;
 	}
 
+	@Transactional
 	public String resetPassword(NewPasswordPostRequest request) {
 		User user = userRepository.findByUsername(request.getUsername())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
 		user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+		user.setTokenVersion(user.getTokenVersion() + 1);
 		userRepository.save(user);
 
 		return "비밀번호가 성공적으로 변경되었습니다.";

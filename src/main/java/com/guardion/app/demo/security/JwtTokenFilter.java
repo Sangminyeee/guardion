@@ -34,6 +34,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		if (token != null && jwtProvider.validateToken(token)) {
 			String username = jwtProvider.getUsername(token);
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+			// tokenVersion 비교
+			Integer tokenVersionInToken = jwtProvider.getTokenVersion(token);
+			Integer tokenVersionInDb = ((CustomUserDetails) userDetails).getUser().getTokenVersion();
+			if (!tokenVersionInToken.equals(tokenVersionInDb)) {
+				log.warn("Token version mismatch for user: {}", username);
+				throw new RuntimeException("Invalid token version. 만료된 토큰입니다.");
+			}
+
 			Authentication auth = new UsernamePasswordAuthenticationToken(
 				userDetails, null, userDetails.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth);

@@ -22,9 +22,11 @@ public class JwtProvider {
 
 	private final long validityInMilliseconds = 3600000; // 1시간
 
-	public String createToken(String username, String role) {
+	public String createToken(String username, String role, int tokenVersion) {
 		Claims claims = Jwts.claims().setSubject(username);
 		claims.put("role", role);
+		claims.put("tokenVersion", tokenVersion);
+
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -54,5 +56,13 @@ public class JwtProvider {
 			.parseClaimsJws(token)
 			.getBody()
 			.getSubject();
+	}
+
+	public int getTokenVersion(String token) {
+		Claims claims = Jwts.parser()
+			.setSigningKey(secretKey)
+			.parseClaimsJws(token)
+			.getBody();
+		return claims.get("tokenVersion", Integer.class);
 	}
 }

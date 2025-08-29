@@ -72,6 +72,7 @@ public class EnterService {
 			.email(p.getEmail())
 			.username(p.getUsername())
 			.password(p.getPassword())
+			.tokenVersion(0)
 			.role(UserRole.VIEWER)
 			.build();
 		userRepository.save(u);
@@ -89,7 +90,7 @@ public class EnterService {
 			throw new BusinessException(ErrorCode.INVALID_PASSWORD);
 		}
 
-		return jwtProvider.createToken(user.getUsername(), user.getRole().name());
+		return jwtProvider.createToken(user.getUsername(), user.getRole().name(), user.getTokenVersion());
 	}
 
 	private String generate6Digits() {
