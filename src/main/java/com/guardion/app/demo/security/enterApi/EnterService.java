@@ -83,6 +83,7 @@ public class EnterService {
 		return "회원가입이 완료되었습니다.";
 	}
 
+	@Transactional
 	public String login(LoginRequest request) {
 		User user = userRepository.findByUsername(request.getUsername())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));

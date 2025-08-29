@@ -139,18 +139,6 @@ public class FindService {
 		return returnValid();
 	}
 
-	public Map<String, Object> returnValid() {
-		return Map.of(
-			"valid", true
-		);
-	}
-	public Map<String, Object> returnInvalid(String reason) {
-		Map<String, Object> body = new LinkedHashMap<>();
-		body.put("valid", false);
-		body.put("reason", reason);
-		return body;
-	}
-
 	@Transactional
 	public String resetPassword(NewPasswordPostRequest request) {
 		User user = userRepository.findByUsername(request.getUsername())
@@ -161,6 +149,18 @@ public class FindService {
 		userRepository.save(user);
 
 		return "비밀번호가 성공적으로 변경되었습니다.";
+	}
+
+	public Map<String, Object> returnValid() {
+		return Map.of(
+			"valid", true
+		);
+	}
+	public Map<String, Object> returnInvalid(String reason) {
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("valid", false);
+		body.put("reason", reason);
+		return body;
 	}
 
 	private String generate6Digits() {
