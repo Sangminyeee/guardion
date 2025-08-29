@@ -26,17 +26,16 @@ public class MailService {
 	@Value("${mail.from}")
 	private String fromAddress;
 
-	@Value("${mail.reset-base-url}")
-	private String resetBaseUrl;
+	public void sendVerificationCodeMail(String username, String email, String link) {
 
-	public void sendVerificationCodeMail(String name, String email) {
+		// if (email == null || email.isBlank()) {
+		// 	throw new IllegalArgumentException("메일 전송 시도:이메일 주소가 누락되었음");
+		// } else if(link == null || link.isBlank()) {
+		// 	throw new IllegalArgumentException("메일 전송 시도:링크가 누락되었음");
+		// }
 
-		if (email == null || email.isBlank()) {
-			throw new IllegalArgumentException("이메일 주소가 누락되었음");
-		}
-
-		String resetToken = UUID.randomUUID().toString();
-		String resetLink = String.format("%s?token=%s", resetBaseUrl, resetToken);
+		// String resetToken = UUID.randomUUID().toString();
+		// String resetLink = String.format("%s?token=%s", resetBaseUrl, resetToken);
 
 		String subject = "[Guardion] 비밀번호 재설정 안내";
 		String html = """
@@ -49,7 +48,7 @@ public class MailService {
                   <p>만약 본인이 요청하지 않았다면, 이 메일은 무시하셔도 됩니다.</p>
                   <p style='color:#666'>보안상 링크는 일정 시간 이후 만료될 수 있습니다.</p>
                 </div>
-                """.formatted(name,resetLink);
+                """.formatted(username,link);
 
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
