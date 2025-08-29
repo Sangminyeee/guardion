@@ -5,14 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +24,7 @@ import com.guardion.app.demo.repository.PasswordResetTokenRepository;
 import com.guardion.app.demo.repository.UserRepository;
 import com.guardion.app.demo.security.TokenHash.HashUtils;
 import com.guardion.app.demo.security.TokenHash.TokenUtils;
+import com.guardion.app.demo.security.dto.FindUsernameRequest;
 import com.guardion.app.demo.security.dto.NewPasswordPostRequest;
 import com.guardion.app.demo.security.dto.PasswordResetRequest;
 
@@ -46,6 +44,43 @@ public class FindService {
 	private String resetBaseUrl;
 	@Value("${app.reset-token.ttl-minutes}")
 	private long ttlMinutes;
+
+	@Transactional
+	public String sendMailToFindUsername(FindUsernameRequest request) {
+		User user = userRepository.findByBirthDateAndEmail(request.getBirthDate(), request.getEmail())
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		String code = generate6Digits();        // "031942"
+		String codeHash = sha256(code);
+
+		user.setFindUsernameHashCode(codeHash);
+		userRepository.save(user);
+
+		mailService.sendOtpCode(request.getEmail(), "[Guardion] Username 찾기 인증코드", "인증 코드: " + code + "\n유효시간: 10분");
+		return "인증코드가 이메일로 전송되었습니다.";
+	}
+
+	@Transactional
+	public String verifyFindUsernameCode(String code, String email) {
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		String presentedHash = sha256(code);
+
+		if(user.getFindUsernameHashCode() == null) {
+			throw new BusinessException(ErrorCode.VERIFICATION_CODE_NOT_FOUND);
+		}
+
+		if(!user.getFindUsernameHashCode().equals(presentedHash)) {
+			throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
+		}
+
+		// 인증 성공 시 해시 제거(재사용 방지)
+		user.setFindUsernameHashCode(null);
+		userRepository.save(user);
+
+		return "Username : " + user.getUsername();
+	}
 
 	@Transactional
 	public String sendMailToUser(@Valid PasswordResetRequest request) {
@@ -126,6 +161,20 @@ public class FindService {
 		userRepository.save(user);
 
 		return "비밀번호가 성공적으로 변경되었습니다.";
+	}
+
+	private String generate6Digits() {
+		return String.format("%06d", new SecureRandom().nextInt(1_000_000));
+	}
+
+	private String sha256(String input) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+			return Base64.getEncoder().encodeToString(hash);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
 

@@ -39,7 +39,12 @@ public enum ErrorCode {
 
 	//Token
 	INVALID_RESET_TOKEN(HttpStatus.BAD_REQUEST, "T001", "유효하지 않은 비밀번호 재설정 토큰입니다."),
-	INVALID_TOKEN_VERSION(HttpStatus.BAD_REQUEST, "T002", "유효하지 않은 토큰 버전입니다.");
+	INVALID_TOKEN_VERSION(HttpStatus.BAD_REQUEST, "T002", "유효하지 않은 토큰 버전입니다."),
+
+	//verification code
+	INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "V001", "유효하지 않은 인증 코드입니다."),
+	VERIFICATION_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "V002", "인증 코드 발급 내역이 없습니다.");
+
 
 	private final HttpStatus httpStatus;
 	private final String code;

@@ -24,6 +24,9 @@ public class SignupCodeRequest {
 	@NotBlank(message = "Email is required")
 	private String email;
 
+	@NotBlank(message = "Birth date is required.")
+	private String birthDate; // "yyyyMMdd"
+
 	public User toEntity(String encodedPassword) {
 		return User.builder()
 				.username(username)
@@ -37,6 +40,7 @@ public class SignupCodeRequest {
 		return PendingUser.builder()
 				.username(username)
 				.email(email)
+				.birthDate(birthDate) // Not used in signup, set to empty string
 				.password(encodedPassword)
 				.code(encodedCode)
 				.expiresAt(LocalDateTime.now().plusMinutes(10)) // 10분 후 만료

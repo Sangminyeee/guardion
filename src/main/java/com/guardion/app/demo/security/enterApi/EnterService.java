@@ -72,6 +72,7 @@ public class EnterService {
 			.email(p.getEmail())
 			.username(p.getUsername())
 			.password(p.getPassword())
+			.birthDate(p.getBirthDate())
 			.tokenVersion(0)
 			.role(UserRole.VIEWER)
 			.build();

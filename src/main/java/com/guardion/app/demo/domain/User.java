@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,8 +38,14 @@ public class User extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private String email;
 
+	@Column(name = "birth_date", nullable = false)
+	private String birthDate; // "yyyyMMdd"
+
 	@Column(name = "token_version")
 	private int tokenVersion;
+
+	@Column(name = "find_id_hash_code")
+	private String findUsernameHashCode;
 
 	@Column(name = "organization_name")
 	private String organization;
@@ -59,5 +64,9 @@ public class User extends BaseEntity {
 
 	public void setTokenVersion(int i) {
 		this.tokenVersion = i;
+	}
+
+	public void setFindUsernameHashCode(String code) {
+		this.findUsernameHashCode = code;
 	}
 }

@@ -38,6 +38,9 @@ public class PendingUser extends BaseEntity {
 	@Column(nullable=false, length=50, unique = true)
 	private String username;
 
+	@Column(name = "birth_date", nullable = false)
+	private String birthDate; // "yyyyMMdd"
+
 	@Column(nullable=false, length=255)
 	private String password; //hashed password
 
