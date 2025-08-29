@@ -64,15 +64,14 @@ public class MailService {
 	}
 
 	public void sendOtpCode(String to, String subject, String text) {
-
-		if (to == null || to.isBlank()) {
-			throw new IllegalArgumentException("이메일 주소가 누락되었음");
-		}
-
+		try {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
 		mailSender.send(message);
+		} catch (Exception e) {
+			throw new RuntimeException("메일 전송 실패: " + e.getMessage(), e);
+		}
 	}
 }

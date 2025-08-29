@@ -9,4 +9,5 @@ import com.guardion.app.demo.domain.PasswordResetToken;
 
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
+	Optional<PasswordResetToken> findByUserNameAndTokenHash(String userName, byte[] tokenHash);
 }

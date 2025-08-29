@@ -24,8 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "password_reset_token",
-	uniqueConstraints = @UniqueConstraint(name = "uk_user", columnNames = "user_id"))
+@Table(name = "password_reset_token")
 public class PasswordResetToken extends BaseEntity {
 
 	@Id
@@ -33,7 +32,7 @@ public class PasswordResetToken extends BaseEntity {
 	private Long id;
 
 	@Column(name="user_id", nullable=false)
-	private Long userId;
+	private String userName;
 
 	@Column(name="token_hash", nullable=false, columnDefinition = "VARBINARY(64)")
 	private byte[] tokenHash;
@@ -43,4 +42,8 @@ public class PasswordResetToken extends BaseEntity {
 
 	@Column(name="used_at")
 	private LocalDateTime usedAt;
+
+	public void setUsedAt(LocalDateTime time) {
+		this.usedAt = time;
+	}
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,4 +49,8 @@ public class User extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role = UserRole.VIEWER;
+
+	public void setPassword(String newPassword) {
+		this.password = newPassword;
+	}
 }
