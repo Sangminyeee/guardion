@@ -5,6 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.guardion.app.demo.exception.BusinessException;
+import com.guardion.app.demo.exception.code.ErrorCode;
 import com.guardion.app.demo.repository.UserRepository;
 import com.guardion.app.demo.domain.User;
 
@@ -20,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username)
 		throws UsernameNotFoundException {
 		User user = userRepository.findByUsername(username)
-			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 		return new CustomUserDetails(user);
 	}
 }

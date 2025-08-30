@@ -185,7 +185,7 @@ public class FindService {
 			byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 			return Base64.getEncoder().encodeToString(hash);
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("SHA-256 알고리즘을 찾을 수 없음" + e.getMessage(), e);
 		}
 	}
 }
