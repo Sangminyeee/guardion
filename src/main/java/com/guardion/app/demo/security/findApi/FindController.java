@@ -58,7 +58,7 @@ public class FindController {
 		return ResponseEntity.ok(ApiResponse.success(body));
 	}
 
-	@Operation(summary = "비밀번호 재설정 api", description = "새로운 비밀번호 POST(GET /password/reset-verify 의 응답이 valid 일 경우에만 호출), body(username, newpassword) 내용은 사용자로부터 입력받고, param의 username 은 프론트가 지정.(서버에서 둘이 같은지 검사예정))")
+	@Operation(summary = "비밀번호 재설정 api", description = "GET /password/reset-verify 의 응답이 valid 일 경우에만 호출, body(username, newpassword) 내용은 사용자로부터 입력받고, param의 username 은 프론트가 지정.(서버에서 둘이 같은지 검사예정))")
 	@PostMapping("/password/reset")
 	public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody @Valid NewPasswordPostRequest request, @RequestParam String userName) {
 		String content = findService.resetPassword(request, userName);
