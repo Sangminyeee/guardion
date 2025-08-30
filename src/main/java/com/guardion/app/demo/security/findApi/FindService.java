@@ -1,5 +1,7 @@
 package com.guardion.app.demo.security.findApi;
 
+import static java.time.LocalTime.*;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -37,8 +39,9 @@ public class FindService {
 
 	private final MailService mailService;
 	private final UserRepository userRepository;
-	private final PasswordResetTokenRepository tokenRepository;
+	private final PasswordResetTokenRepository resetTokenRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final FindUsernameAssistService findUsernameAssistService;
 
 	@Value("${mail.reset-base-url}")
 	private String resetBaseUrl;
@@ -54,6 +57,9 @@ public class FindService {
 		String codeHash = sha256(code);
 
 		user.setFindUsernameHashCode(codeHash);
+		user.setFindUsernameHashCodeAttempts(0);
+		LocalDateTime expiresAt = LocalDateTime.now().plus(Duration.ofMinutes(ttlMinutes));
+		user.setFindUsernameHashCodeExpiresAt(expiresAt);
 		userRepository.save(user);
 
 		mailService.sendOtpCode(request.getEmail(), "[Guardion] Username 찾기 인증코드", "인증 코드: " + code + "\n유효시간: 10분");
@@ -65,19 +71,21 @@ public class FindService {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-		String presentedHash = sha256(code);
-
-		if(user.getFindUsernameHashCode() == null) {
-			throw new BusinessException(ErrorCode.VERIFICATION_CODE_NOT_FOUND);
+		if (now().isAfter(user.getFindUsernameHashCodeExpiresAt().toLocalTime())) {
+			findUsernameAssistService.invalidateFindUsernameHashCode(user);
+			throw new IllegalStateException("인증코드가 만료됨.");
 		}
-
-		if(!user.getFindUsernameHashCode().equals(presentedHash)) {
-			throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
+		if (user.getFindUsernameHashCodeAttempts() >= 5) {
+			findUsernameAssistService.invalidateFindUsernameHashCode(user);
+			throw new IllegalStateException("인증코드 검증 시도 횟수 초과.");
+		}
+		if (!sha256(code).equals(user.getFindUsernameHashCode())) {
+			findUsernameAssistService.increaseAttempts(user);
+			throw new IllegalArgumentException("인증코드 불일치. 누적 시도 횟수: " + user.getFindUsernameHashCodeAttempts());
 		}
 
 		// 인증 성공 시 해시 제거(재사용 방지)
-		user.setFindUsernameHashCode(null);
-		userRepository.save(user);
+		findUsernameAssistService.invalidateFindUsernameHashCode(user);
 
 		return "Username : " + user.getUsername();
 	}
@@ -104,7 +112,7 @@ public class FindService {
 				.build();
 
 		// 4) 업서트 저장(사용자당 1개만 유효)
-		tokenRepository.save(token);
+		resetTokenRepository.save(token);
 
 		// 5) 링크 구성(프론트 라우트 기준 예시)
 		//    필요하면 uid를 함께 전달하거나, 프런트가 이후 /reset-verify에서 이메일을 다시 적게 할 수도 있다.
@@ -119,30 +127,34 @@ public class FindService {
 	@Transactional
 	public Map<String, Object> verifyResetToken(String plainToken, String userName) {
 		byte[] presentedHash = HashUtils.sha256(plainToken);
-		var t = tokenRepository.findByUserNameAndTokenHash(userName, presentedHash);
+		var t = resetTokenRepository.findByUserNameAndTokenHash(userName, presentedHash);
 
 		if (t.isEmpty()) {
-			return returnInvalid("token not found");
+			return returnInvalid("token not found (토큰을 찾을 수 없습니다. 다시 발급받으세요.)");
 		}
 		var token = t.get();
 		if (token.getUsedAt() != null) {
-			return returnInvalid("used token");
+			return returnInvalid("used token (이미 사용된 토큰입니다. 다시 발급받으세요.)");
 		}
 		if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-			return returnInvalid("expired token");
+			return returnInvalid("expired token (토큰 사용 시간이 만료된 토큰입니다. 다시 발급받으세요.)");
 		}
 
 		// 성공: 토큰 사용 처리(재사용 방지)
 		token.setUsedAt(LocalDateTime.now());
-		tokenRepository.save(token);
+		resetTokenRepository.save(token);
 
 		return returnValid();
 	}
 
 	@Transactional
-	public String resetPassword(NewPasswordPostRequest request) {
+	public String resetPassword(NewPasswordPostRequest request, String userName) {
 		User user = userRepository.findByUsername(request.getUsername())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+		if( !user.getUsername().equals(userName)) {
+			throw new IllegalArgumentException("비밀번호 재설정 대상 user가 다름.");
+		}
 
 		user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 		user.setTokenVersion(user.getTokenVersion() + 1);

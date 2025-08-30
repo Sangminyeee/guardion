@@ -6,8 +6,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import com.guardion.app.demo.security.dto.LoginRequest;
 import com.guardion.app.demo.security.dto.SignupCodeRequest;
 import com.guardion.app.demo.security.dto.SignupVerifyRequest;
 import com.guardion.app.demo.security.findApi.MailService;
+import com.guardion.app.demo.security.findApi.PendingUserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +40,10 @@ public class EnterService {
 	private final JwtProvider jwtProvider;
 	private final PendingUserRepository pendingUserRepository;
 	private final MailService mailService;
+	private final PendingUserService pendingUserService;
+
+	@Value("${app.reset-token.ttl-minutes}")
+	private long ttlMinutes;
 
 	@Transactional
 	public String sendCode(SignupCodeRequest request) {
@@ -49,7 +57,8 @@ public class EnterService {
 		String codeHash = sha256(code);
 		String pwdHash  = passwordEncoder.encode(request.getPassword());
 
-		pendingUserRepository.save(request.toPendingUser(pwdHash, codeHash));
+		LocalDateTime expiresAt = LocalDateTime.now().plus(Duration.ofMinutes(ttlMinutes));
+		pendingUserRepository.save(request.toPendingUser(pwdHash, codeHash, expiresAt));
 
 		mailService.sendOtpCode(request.getEmail(), "[Guardion] 회원가입 인증코드", "인증 코드: " + code + "\n유효시간: 10분");
 
@@ -60,12 +69,17 @@ public class EnterService {
 	public String verifyCode(SignupVerifyRequest request) {
 		PendingUser p = pendingUserRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND)); //변경필요
-		if (now().isAfter(p.getExpiresAt().toLocalTime())) throw new IllegalStateException("인증코드가 만료됨.");
-		if (p.getAttempts() >= 5) throw new IllegalStateException("인증코드 검증 시도 횟수 초과.");
+		if (now().isAfter(p.getExpiresAt().toLocalTime())) {
+			pendingUserService.deletePendingUser(p);
+			throw new IllegalStateException("인증코드가 만료됨.");
+		}
+		if (p.getAttempts() >= 5) {
+			pendingUserService.deletePendingUser(p);
+			throw new IllegalStateException("인증코드 검증 시도 횟수 초과.");
+		}
 		if (!sha256(request.getCode()).equals(p.getCode())) {
-			p.setAttempts(p.getAttempts() + 1);
-			pendingUserRepository.save(p);
-			throw new IllegalArgumentException("인증코드 불일치.");
+			pendingUserService.increaseAttempts(p);
+			throw new IllegalArgumentException("인증코드 불일치. 누적 시도 횟수: " + p.getAttempts());
 		}
 
 		User u = User.builder()
@@ -73,6 +87,7 @@ public class EnterService {
 			.username(p.getUsername())
 			.password(p.getPassword())
 			.birthDate(p.getBirthDate())
+			.findUsernameHashCodeAttempts(0)
 			.tokenVersion(0)
 			.role(UserRole.VIEWER)
 			.build();

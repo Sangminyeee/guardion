@@ -36,14 +36,14 @@ public class SignupCodeRequest {
 				.build();
 	}
 
-	public PendingUser toPendingUser(String encodedPassword, String encodedCode) {
+	public PendingUser toPendingUser(String encodedPassword, String encodedCode, LocalDateTime expiresAt) {
 		return PendingUser.builder()
 				.username(username)
 				.email(email)
 				.birthDate(birthDate) // Not used in signup, set to empty string
 				.password(encodedPassword)
 				.code(encodedCode)
-				.expiresAt(LocalDateTime.now().plusMinutes(10)) // 10분 후 만료
+				.expiresAt(expiresAt)
 				.attempts(0)
 				.build();
 	}

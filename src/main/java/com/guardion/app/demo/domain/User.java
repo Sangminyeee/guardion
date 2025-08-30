@@ -1,5 +1,7 @@
 package com.guardion.app.demo.domain;
 
+import java.time.LocalDateTime;
+
 import com.guardion.app.demo.domain.common.BaseEntity;
 import com.guardion.app.demo.eunms.UserRole;
 
@@ -47,6 +49,12 @@ public class User extends BaseEntity {
 	@Column(name = "find_id_hash_code")
 	private String findUsernameHashCode;
 
+	@Column(name = "find_id_hash_code_attempts")
+	private Integer findUsernameHashCodeAttempts;
+
+	@Column(name = "find_id_hash_code_expires_at")
+	private LocalDateTime findUsernameHashCodeExpiresAt;
+
 	@Column(name = "organization_name")
 	private String organization;
 
@@ -68,5 +76,13 @@ public class User extends BaseEntity {
 
 	public void setFindUsernameHashCode(String code) {
 		this.findUsernameHashCode = code;
+	}
+
+	public void setFindUsernameHashCodeAttempts(int attempts) {
+		this.findUsernameHashCodeAttempts = attempts;
+	}
+
+	public void setFindUsernameHashCodeExpiresAt(LocalDateTime expiresAt) {
+		this.findUsernameHashCodeExpiresAt = expiresAt;
 	}
 }

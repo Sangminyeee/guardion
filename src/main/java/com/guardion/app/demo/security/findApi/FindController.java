@@ -29,7 +29,7 @@ public class FindController {
 
 	private final FindService findService;
 
-	@Operation(summary = "username(id) 찾기 api", description = "인증코드 이메일을 반환받음. (10분 이내) *요청 시 birthDate 는 20001010 형식으로 입력)")
+	@Operation(summary = "username(id) 찾기 api", description = "인증코드 이메일을 반환받음. *요청 시 birthDate 는 20001010 형식으로 입력)")
 	@PostMapping("/username/find-request")
 	public ResponseEntity<ApiResponse<String>> sendMailToFindUsername(@RequestBody @Valid FindUsernameRequest request) {
 		String content = findService.sendMailToFindUsername(request);
@@ -58,10 +58,10 @@ public class FindController {
 		return ResponseEntity.ok(ApiResponse.success(body));
 	}
 
-	@Operation(summary = "비밀번호 재설정 api", description = "새로운 비밀번호 POST")
+	@Operation(summary = "비밀번호 재설정 api", description = "새로운 비밀번호 POST(GET /password/reset-verify 의 응답이 valid 일 경우에만 호출), body(username, newpassword) 내용은 사용자로부터 입력받고, param의 username 은 프론트가 지정.(서버에서 둘이 같은지 검사예정))")
 	@PostMapping("/password/reset")
-	public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody @Valid NewPasswordPostRequest request) {
-		String content = findService.resetPassword(request);
+	public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody @Valid NewPasswordPostRequest request, @RequestParam String userName) {
+		String content = findService.resetPassword(request, userName);
 		return ResponseEntity.ok(ApiResponse.success(content));
 	}
 
