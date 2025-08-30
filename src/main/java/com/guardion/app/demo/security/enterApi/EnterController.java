@@ -28,21 +28,21 @@ public class EnterController {
 	private final JwtProvider jwtProvider;
 	private final EnterService enterService;
 
-	@Operation(summary = "회원가입 API (1 of 2 이메일 발송 요청) ", description = " 회원가입 시 이메일 인증코드 발송 요청 (10분 이내, 5회 미만 입력)")
+	@Operation(summary = "회원가입 (1) :  이메일 발송 요청 API", description = "회원가입 시 이메일 인증코드 발송 요청 (10분 이내, 5회 미만 입력)")
 	@PostMapping("/signup/code")
 	public ResponseEntity<ApiResponse<String>> sendCode(@RequestBody @Valid SignupCodeRequest request) {
 		String content = enterService.sendCode(request);
 		return ResponseEntity.ok(ApiResponse.success(content));
 	}
 
-	@Operation(summary = "회원가입 API (2 of 2 인증코드 검증) ", description = "수신한 이메일 인증코드 검증 (사용자에게는 코드 입력 필드만 제공, email은 프론트에서 넘겨줄 수 있나요??)")
+	@Operation(summary = "회원가입 (2) : 인증코드 검사 API", description = "수신한 이메일 인증코드 검증 (사용자에게는 코드 입력 필드만 제공, email은 프론트에서 넘겨줄 수 있나요??)")
 	@PostMapping("/signup/verify")
 	public ResponseEntity<ApiResponse<String>> verifyCode(@RequestBody @Valid SignupVerifyRequest request) {
 		String content = enterService.verifyCode(request);
 		return ResponseEntity.ok(ApiResponse.success(content));
 	}
 
-	@Operation(summary = "로그인 API", description = "로그인 시")
+	@Operation(summary = "로그인 API")
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<Void>> login(@RequestBody @Valid LoginRequest request) {
 		String token = enterService.login(request);
