@@ -38,7 +38,7 @@ public class AlertService {
 	@Transactional(readOnly = true)
 	public GetAlertResponseDetailed getAlertDetail(Long alertId) {
 		Alert alert = alertRepository.findById(alertId)
-			.orElseThrow(() -> new BusinessException(ErrorCode.NO_ALERTS_FOR_DEVICE));
+			.orElseThrow(() -> new BusinessExcepti\on(ErrorCode.NO_ALERTS_FOR_DEVICE));
 
 		return alertConverter.alertToGetAlertResponseDetailed(alert);
 	}
